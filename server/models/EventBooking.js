@@ -60,6 +60,19 @@ const eventBookingSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    paymentScreenshot: {
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String,
+        },
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'verified', 'rejected'],
+        default: 'pending',
+    },
 });
 
 // Generate a custom ticket ID before saving

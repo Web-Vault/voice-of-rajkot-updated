@@ -1,6 +1,131 @@
 import EventBooking from '../models/EventBooking.js';
 import Event from '../models/Event.js';
 import { v4 as uuidv4 } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
+import multer from 'multer';
+
+// Configure Cloudinary with explicit values to avoid environment variable issues
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dwk4vt9ao';
+const apiKey = process.env.CLOUDINARY_API_KEY || '783396415861444';
+const apiSecret = process.env.CLOUDINARY_API_SECRET || 'bAokawHbmVPKLCoqKvUpS9OztTE';
+
+cloudinary.config({
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret,
+});
+
+console.log('Cloudinary configured with:', {
+  cloud_name: cloudName,
+  api_key: apiKey ? 'Set' : 'Not Set',
+  api_secret: apiSecret ? 'Set' : 'Not Set'
+});
+
+// Configure multer
+const storage = multer.memoryStorage();
+export const upload = multer({ storage });
+
+// Add this new endpoint
+export const uploadPaymentScreenshot = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const booking = await EventBooking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    if (booking.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    // Log Cloudinary configuration for debugging
+    console.log('Cloudinary Config:', {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY ? 'Set' : 'Not Set',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? 'Set' : 'Not Set'
+    });
+    
+    // Log file details
+    console.log('File details:', {
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      buffer_length: req.file.buffer.length
+    });
+    
+    // Upload to Cloudinary with better error handling and explicit configuration
+    const uploadResult = await new Promise((resolve, reject) => {
+      try {
+        // Create upload options with explicit credentials
+        const uploadOptions = {
+          resource_type: 'image',
+          folder: 'payment_screenshots',
+          public_id: `payment_${booking.ticketId}_${Date.now()}`,
+          api_key: apiKey,
+          api_secret: apiSecret,
+          cloud_name: cloudName
+        };
+        
+        console.log('Creating upload stream with options:', {
+          resource_type: uploadOptions.resource_type,
+          folder: uploadOptions.folder,
+          public_id: uploadOptions.public_id,
+          // Don't log sensitive credentials
+          credentials_provided: !!(uploadOptions.api_key && uploadOptions.api_secret && uploadOptions.cloud_name)
+        });
+        
+        const uploadStream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              reject(error);
+            } else {
+              console.log('Cloudinary upload success:', result.public_id);
+              resolve(result);
+            }
+          }
+        );
+        
+        uploadStream.end(req.file.buffer);
+      } catch (uploadError) {
+        console.error('Error during upload stream creation:', uploadError);
+        reject(uploadError);
+      }
+    });
+
+    // Update booking
+    booking.paymentScreenshot = {
+      public_id: uploadResult.public_id,
+      url: uploadResult.secure_url,
+    };
+    booking.paymentStatus = 'pending';
+    await booking.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Payment screenshot uploaded successfully',
+      booking,
+    });
+  } catch (error) {
+    console.error('Upload error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during payment screenshot upload', 
+      error: error.message,
+      errorCode: error.code || 'UNKNOWN'
+    });
+  }
+};
 
 // @desc    Create a new booking
 // @route   POST /api/bookings
@@ -100,7 +225,7 @@ export const getUserBookings = async (req, res) => {
     try {
         const bookings = await EventBooking.find({ user: req.user._id })
             .populate('event', 'name dateTime venue image price');
-        console.log('User Bookings:', bookings);
+        // console.log('User Bookings:', bookings);
         res.status(200).json({
             success: true,
             count: bookings.length,

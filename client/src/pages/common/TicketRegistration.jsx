@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaPhone, FaUsers, FaMicrophone, FaClock, FaEdit, FaTrash, FaQrcode, FaCreditCard, FaTimes, FaDownload, FaInfoCircle } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaUsers, FaMicrophone, FaClock, FaEdit, FaTrash, FaQrcode, FaCreditCard, FaTimes, FaDownload, FaInfoCircle, FaUpload, FaSpinner } from "react-icons/fa";
 import { getEventById } from "../../services/eventService";
-import { createBooking, getUserBookings } from "../../services/bookingService";
+import { createBooking, getUserBookings, uploadPaymentScreenshot, uploadPaymentScreenshotToBackend } from "../../services/bookingService";
 import { useAuth } from "../../context/AuthContext";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -23,7 +23,11 @@ const TicketRegistration = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [ticketData, setTicketData] = useState(null);
+  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const ticketRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Separate useEffect for data fetching
   useEffect(() => {
@@ -212,48 +216,95 @@ const TicketRegistration = () => {
     setShowQRModal(true);
   };
 
-  const handleCompletePayment = async () => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setUploadError('File size should be less than 5MB');
+        return;
+      }
+      if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+        setUploadError('Only JPG, JPEG, and PNG files are allowed');
+        return;
+      }
+      setPaymentScreenshot(file);
+      setUploadError('');
+    }
+  };
+
+  const handleUploadScreenshot = async () => {
+    if (!paymentScreenshot) {
+      setUploadError('Please select a payment screenshot');
+      return;
+    }
+
+    setUploading(true);
+    setUploadError('');
+
     try {
+      // First create the booking
       const bookingData = {
         event: id,
         username: type === "audience" ? audienceForm.userName : performerForm.userName,
         email: type === "audience" ? audienceForm.email : performerForm.email,
         mobileNumber: type === "audience" ? audienceForm.mobile : performerForm.mobile,
-        numberOfSeats: type === "audience" ? audienceForm.numberOfPeople : 1,
+        numberOfSeats: type === "audience" ? parseInt(audienceForm.numberOfPeople) : 1,
         membersName: type === "audience" ? audienceForm.peopleNames : [],
         isPerformer: type === "performer",
         artType: type === "performer" ? performerForm.artType : undefined,
-        duration: type === "performer" ? performerForm.duration : undefined
+        duration: type === "performer" ? parseInt(performerForm.duration) : undefined,
+        totalAmount: type === "audience" ? audienceTotal : performerTotal,
       };
+
+      const bookingResponse = await createBooking(bookingData);
       
-      // Create booking
-      const response = await createBooking(bookingData);
+      if (!bookingResponse.success) {
+        throw new Error(bookingResponse.message || 'Failed to create booking');
+      }
+
+      // Then upload the payment screenshot
+      // Use the backend upload method instead of direct Cloudinary upload
+      const uploadResponse = await uploadPaymentScreenshotToBackend(
+        bookingResponse.booking._id, 
+        paymentScreenshot
+      );
       
+      if (!uploadResponse.success) {
+        throw new Error('Failed to upload payment screenshot');
+      }
+
       // Generate ticket data
       const ticketInfo = {
-        bookingId: response.booking._id,
+        bookingId: uploadResponse.booking._id,
         eventName: event.name,
-        eventDate: event.date, // Store the original date string
+        eventDate: event.date,
         eventTime: event.time,
         venue: event.venue,
-        attendeeCount: type === "audience" ? audienceForm.numberOfPeople : 1,
+        attendeeCount: type === "audience" ? parseInt(audienceForm.numberOfPeople) : 1,
         attendees: type === "audience" ? audienceForm.peopleNames : [performerForm.userName],
         ticketType: type === "audience" ? "Audience" : "Performer",
         bookingDate: new Date().toLocaleDateString(),
         amount: type === "audience" ? audienceTotal : performerTotal,
-        // Performer-specific details
         artType: type === "performer" ? performerForm.artType : undefined,
-        duration: type === "performer" ? performerForm.duration : undefined,
-        isPerformer: type === "performer"
+        duration: type === "performer" ? parseInt(performerForm.duration) : undefined,
+        isPerformer: type === "performer",
+        paymentStatus: 'pending'
       };
       
-      // Set ticket data and show ticket modal
+      // Set ticket data and show success message
       setTicketData(ticketInfo);
       setShowQRModal(false);
       setShowTicketModal(true);
-    } catch (err) {
-      alert(err.message || "Booking failed");
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadError(error.response?.data?.message || error.message || 'Failed to process booking');
+    } finally {
+      setUploading(false);
     }
+  };
+
+  const handleCompletePayment = () => {
+    setShowQRModal(true);
   };
 
   const closeRulesModal = () => {
@@ -297,6 +348,30 @@ const TicketRegistration = () => {
   // QR Code Modal Component
   const QRCodeModal = () => {
     const qrCodeRef = useRef(null);
+    const fileInputRef = useRef(null);
+    
+    const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          setUploadError('File size should be less than 5MB');
+          return;
+        }
+        if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+          setUploadError('Only JPG, JPEG, and PNG files are allowed');
+          return;
+        }
+        setPaymentScreenshot(file);
+        setUploadError('');
+      }
+    };
+
+    const handleRemoveScreenshot = () => {
+      setPaymentScreenshot(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    };
     
     useEffect(() => {
       if (qrCodeRef.current) {
@@ -416,15 +491,79 @@ const TicketRegistration = () => {
           </div>
 
           <div className="modal-footer">
+            {/* Payment Screenshot Upload */}
+            <div className="mt-6 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Upload Payment Screenshot</h3>
+              
+              {!paymentScreenshot ? (
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <div className="flex text-sm text-gray-600 justify-center">
+                      <label
+                        htmlFor="payment-screenshot"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
+                      >
+                        <span>Upload a file</span>
+                        <input
+                          id="payment-screenshot"
+                          name="payment-screenshot"
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          ref={fileInputRef}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, JPEG up to 5MB
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-1 flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-md">
+                  <img
+                    src={URL.createObjectURL(paymentScreenshot)}
+                    alt="Payment Screenshot Preview"
+                    className="max-h-40 max-w-full mx-auto mb-2 rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveScreenshot}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove and upload another
+                  </button>
+                </div>
+              )}
+              
+              {uploadError && (
+                <p className="mt-2 text-sm text-red-600">{uploadError}</p>
+              )}
+            </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={closeQRModal}>
+              <button 
+                className="cancel-btn" 
+                onClick={closeQRModal}
+                disabled={uploading}
+              >
                 Cancel
               </button>
               <button 
-                className="confirm-payment-btn"
-                onClick={handleCompletePayment}
+                className={`confirm-payment-btn ${!paymentScreenshot || uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={handleUploadScreenshot}
+                disabled={!paymentScreenshot || uploading}
               >
-                I've Completed Payment
+                {uploading ? (
+                  <>
+                    <FaSpinner className="animate-spin mr-2 inline" />
+                    Processing...
+                  </>
+                ) : (
+                  'Submit Payment Proof'
+                )}
               </button>
             </div>
           </div>
@@ -664,9 +803,9 @@ const TicketRegistration = () => {
           
           <div className="modal-footer">
             <div className="modal-actions flex">
-              <button className="download-btn w-100 flex justify-center" onClick={handleDownloadTicket}>
+              {/* <button className="download-btn w-100 flex justify-center" onClick={handleDownloadTicket}>
                 <FaDownload /> Download Ticket
-              </button>
+              </button> */}
               <button className="confirm-btn w-100" onClick={closeTicketModal}>
                 Done
               </button>
