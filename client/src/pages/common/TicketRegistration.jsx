@@ -254,6 +254,7 @@ const TicketRegistration = () => {
         artType: type === "performer" ? performerForm.artType : undefined,
         duration: type === "performer" ? parseInt(performerForm.duration) : undefined,
         totalAmount: type === "audience" ? audienceTotal : performerTotal,
+        paymentStatus: 'verified'
       };
 
       const bookingResponse = await createBooking(bookingData);
@@ -288,7 +289,7 @@ const TicketRegistration = () => {
         artType: type === "performer" ? performerForm.artType : undefined,
         duration: type === "performer" ? parseInt(performerForm.duration) : undefined,
         isPerformer: type === "performer",
-        paymentStatus: 'pending'
+        paymentStatus: 'verified'
       };
       
       // Set ticket data and show success message
@@ -1051,7 +1052,7 @@ const TicketRegistration = () => {
                       type="text"
                       value={performerForm.duration}
                       onChange={(e) => handlePerformerInputChange('duration', e.target.value)}
-                      placeholder="e.g., 10 minutes, 15-20 minutes"
+                      placeholder="e.g., 5, 3, etc"
                     />
                     <small className="text-sm text-gray-500 ml-1">maximum time for performance is 5 minutes.</small>
                   </div>

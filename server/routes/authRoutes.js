@@ -1,6 +1,6 @@
 import express from 'express';
-import { register, login, getUserProfile, getAllPerformers, getUserById, updateUserProfile, artistOnboarding } from '../controllers/authController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { register, login, getUserProfile, getAllPerformers, getUserById, updateUserProfile, artistOnboarding, getAllUsers } from '../controllers/authcontroller.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -21,6 +21,9 @@ router.get('/performers', getAllPerformers);
 
 // Get user by ID route
 router.get('/users/:id', getUserById);
+
+// Get all users route (protected, admin only)
+router.get('/users', protect, getAllUsers);
 
 // Artist onboarding route (protected)
 router.post('/artist-onboarding', protect, artistOnboarding);

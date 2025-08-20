@@ -1,0 +1,63 @@
+/* AdminDashboard.css */
+
+.admin-dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.admin-dashboard h1 {
+    color: #343a40;
+    margin-bottom: 2rem;
+}
+
+.admin-dashboard .nav-pills .nav-link {
+    color: #495057;
+    font-weight: 500;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.admin-dashboard .nav-pills .nav-link.active {
+    background-color: #6c63ff;
+    color: white;
+}
+
+.admin-dashboard .tab-content {
+    padding: 1.5rem 0;
+}
+
+.admin-dashboard .table th {
+    font-weight: 600;
+    background-color: #f1f3f5;
+}
+
+.admin-dashboard .table td, .admin-dashboard .table th {
+    vertical-align: middle;
+}
+
+/* Event card styles */
+.event-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}

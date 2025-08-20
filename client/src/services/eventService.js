@@ -60,10 +60,21 @@ export const getEventsByPerformer = async (performerId) => {
   }
 };
 
+// Create a new event
+export const createEvent = async (eventData) => {
+  try {
+    const response = await api.post('/', eventData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { success: false, message: 'Failed to create event' };
+  }
+};
+
 const eventService = {
   getAllEvents,
   getEventById,
-  getEventsByPerformer
+  getEventsByPerformer,
+  createEvent
 };
 
 export default eventService;

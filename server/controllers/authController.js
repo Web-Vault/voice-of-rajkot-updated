@@ -150,6 +150,27 @@ export const getUserById = async (req, res) => {
     }
 };
 
+// @desc    Get all users
+// @route   GET /api/auth/users
+// @access  Private (Admin only)
+export const getAllUsers = async (req, res) => {
+    try {
+        // Check if user is admin
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ success: false, message: 'Not authorized as admin' });
+        }
+        
+        const users = await User.find().select('-password');
+        res.status(200).json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        console.error('Get all users error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+};
+
 // @desc    Update user profile
 // @route   PUT /api/auth/profile
 // @access  Private

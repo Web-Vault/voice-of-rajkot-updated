@@ -66,11 +66,22 @@ export const getAllPerformers = async () => {
   }
 };
 
+// Get all users (admin only)
+export const getAllUsers = async () => {
+  try {
+    const response = await api.get('/users');
+    return response.data.users;
+  } catch (error) {
+    throw error.response?.data || { success: false, message: 'Failed to fetch users' };
+  }
+};
+
 const userService = {
   getUserProfile,
   getArtistProfile,
   updateUserProfile,
-  getAllPerformers
+  getAllPerformers,
+  getAllUsers
 };
 
 export default userService;
