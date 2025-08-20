@@ -115,7 +115,7 @@ const AppNavbar = () => {
                 {dropdownOpen && (
                   <div className="user-dropdown">
                     <Link
-                      to={user && user.isPerformer ? "/artist/profile" : "/my-profile"}
+                      to={user && user.isAdmin ? "/admin/dashboard" : user.isPerformer ? "/artist/profile" : "/my-profile"}
                       className="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
                       onClick={() => setDropdownOpen(false)}
                     >

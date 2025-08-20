@@ -49,6 +49,7 @@ export const login = async (email, password) => {
     const response = await api.post('/login', { email, password });
     if (response.data.success) {
       // Store user data in localStorage
+      console.log(response.data.user);
       localStorage.setItem('userInfo', JSON.stringify(response.data.user));
       localStorage.setItem('userToken', response.data.user.token);
     }

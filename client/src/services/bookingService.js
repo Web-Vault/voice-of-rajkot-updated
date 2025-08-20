@@ -41,10 +41,61 @@ export const getUserBookings = async () => {
 // Get event bookings
 export const getEventBookings = async (eventId) => {
   try {
-    const response = await api.get(`/event/${eventId}`);
+    // Get fresh token from localStorage
+    const token = localStorage.getItem('userToken');
+    
+    if (!token) {
+      console.error('No authentication token found');
+      window.location.href = '/login';
+      throw new Error('Please log in to continue');
+    }
+    
+    // Make sure to use the api instance which has the interceptor
+    const response = await api.get(`/event/${eventId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      withCredentials: true
+    });
+    
     return response.data;
   } catch (error) {
-    throw error.response?.data || { success: false, message: 'Failed to fetch event bookings' };
+    console.error('Error in getEventBookings:', error);
+    
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+      
+      if (error.response.status === 403) {
+        // Clear invalid token
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userInfo');
+        window.location.href = '/login';
+        throw new Error('Your session has expired. Please log in again.');
+      }
+      
+      throw error.response.data || { 
+        success: false, 
+        message: error.response.statusText || 'Failed to fetch event bookings' 
+      };
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('No response received:', error.request);
+      throw { 
+        success: false, 
+        message: 'No response from server. Please check your connection.' 
+      };
+    } else {
+      // Something happened in setting up the request
+      console.error('Request setup error:', error.message);
+      throw { 
+        success: false, 
+        message: error.message || 'Failed to fetch event bookings' 
+      };
+    }
   }
 };
 

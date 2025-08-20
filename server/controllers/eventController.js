@@ -9,8 +9,8 @@ export const createEvent = async (req, res) => {
         const { name, dateTime, venue, description, totalSeats, price, image } = req.body;
         
         // Check if user is a performer
-        if (!req.user.isPerformer) {
-            return res.status(403).json({ success: false, message: 'Only performers can create events' });
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ success: false, message: 'Only Admins can create events' });
         }
         
         const event = await Event.create({

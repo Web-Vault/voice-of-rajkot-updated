@@ -275,8 +275,13 @@ export const getEventBookings = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    // Check if user is a performer in this event
-    if (!event.performers.includes(req.user._id)) {
+    // Check if user is an admin or a performer in this event
+    const isAdmin = req.user.isAdmin;
+    const isPerformer = event.performers.some(performer => 
+      performer._id ? performer._id.toString() === req.user._id.toString() : performer.toString() === req.user._id.toString()
+    );
+
+    if (!isAdmin && !isPerformer) {
       return res.status(403).json({ success: false, message: 'Not authorized to view these bookings' });
     }
 

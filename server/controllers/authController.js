@@ -84,6 +84,7 @@ export const login = async (req, res) => {
                 isPerformer: user.isPerformer,
                 profilePhoto: user.profilePhoto,
                 isSampleAdded: user.isSampleAdded,
+                isAdmin: user.isAdmin,
                 token: generateToken(user._id),
             },
         });

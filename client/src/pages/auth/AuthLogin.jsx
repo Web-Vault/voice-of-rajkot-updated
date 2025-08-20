@@ -75,15 +75,21 @@ const AuthLogin = () => {
       // Import here to avoid circular dependencies
       const { login } = await import('../../services/authService');
       const response = await login(email, password);
-      
+      console.log("response", response);
       if (response.success) {
         updateAuthState();
-        // Check if user is an artist to redirect appropriately
-        if (response.user.isPerformer) {
-          navigate('/artist/profile');
+
+        if (response.user.isAdmin) {
+          navigate('/admin/dashboard');
         } else {
-          navigate('/');
+            if (response.user.isPerformer) {
+              // Check if user is an artist to redirect appropriately
+                navigate('/artist/profile');
+            } else {
+                navigate('/');
+            }
         }
+        
       }
     } catch (error) {
       setErrors({

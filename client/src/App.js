@@ -20,6 +20,7 @@ import EventDetails from "./pages/common/EventDetails";
 import TicketRegistration from "./pages/common/TicketRegistration";
 import ArtistProfile from "./pages/artist/ArtistProfile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import EventBookings from "./pages/admin/EventBookings";
 import ContactUs from "./pages/contactUs";
 import PrivacyPolicy from "./pages/privacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
@@ -58,6 +59,7 @@ function AppRoutes() {
         <Route path="/artist/profile" element={<ProtectedRoute requiresPerformer={true}><ArtistProfile /></ProtectedRoute>} />
         {/* Admin pages */}
         <Route path="/admin/dashboard" element={<ProtectedRoute requiresAdmin={true}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/events/:eventId/bookings" element={<ProtectedRoute requiresAdmin={true}><EventBookings /></ProtectedRoute>} />
         {/* Add more routes for other pages here */}
         <Route path="*" element={<NotFound />} />
       </Routes>
