@@ -554,9 +554,25 @@ const ArtistProfile = () => {
                       </p>
                     </div>
                   )}
+                  <div className="flex justify-between items-center mt-4">
                   <div className="mt-4 text-sm text-gray-500">
                     Booked on:{" "}
                     {new Date(booking.createdAt).toLocaleDateString()}
+                  </div>
+                    <span className="text-sm text-gray-600">
+                      Status:{" "}
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm font-medium ${
+                          booking.paymentStatus === "verified"
+                            ? "bg-green-100 text-green-800"
+                            : booking.paymentStatus === "pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {booking.paymentStatus}
+                      </span>
+                    </span>
                   </div>
                 </div>
               ))}

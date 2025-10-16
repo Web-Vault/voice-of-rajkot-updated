@@ -74,15 +74,26 @@ const EventDetails = () => {
       {/* INFO PANEL */}
       <section className="eventdetails-info-panel">
         <div className="eventdetails-info-flex">
-          {/* Left: Description & Performers */}
           <div className="eventdetails-info-left">
-            <p className="eventdetails-info-desc">{event.description}</p>
+            <p
+              className="eventdetails-info-desc"
+              style={{ whiteSpace: "pre-line" }}
+            >
+              {event.description}
+            </p>
             <div className="eventdetails-performers-row">
               {event.performers.map((performer, idx) => (
                 <div key={idx} className="eventdetails-performer-avatar-wrap">
-                  <img src={performer.profilePhoto || `https://randomuser.me/api/portraits/${performer.gender === 'female' ? 'women' : 'men'}/${(idx + 1) * 11}.jpg`} 
-                       alt={performer.name} 
-                       className="eventdetails-performer-avatar" />
+                  <img
+                    src={
+                      performer.profilePhoto ||
+                      `https://randomuser.me/api/portraits/${
+                        performer.gender === "female" ? "women" : "men"
+                      }/${(idx + 1) * 11}.jpg`
+                    }
+                    alt={performer.name}
+                    className="eventdetails-performer-avatar"
+                  />
                   <div className="eventdetails-performer-name">{performer.name}</div>
                   <div className="eventdetails-performer-role">Performer</div>
                 </div>

@@ -6,6 +6,8 @@ import { getAllUsers } from '../../services/userService';
 import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
+import { FiDelete } from 'react-icons/fi';
+import { FaDeleteLeft } from 'react-icons/fa6';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000';
 
@@ -90,6 +92,11 @@ const AdminDashboard = () => {
 
   const toggleUserDetails = (userId) => {
     setExpandedUser(expandedUser === userId ? null : userId);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    // Implement user deletion logic here
+    // For example, call an API to delete the user and then update the users state
   };
 
   if (loading) {
@@ -249,13 +256,19 @@ const AdminDashboard = () => {
                                 {user.isAdmin ? 'Admin' : user.isPerformer ? 'Performer' : 'User'}
                               </span>
                             </td>
-                            <td className="py-3 px-6 text-center">
+                            <td className="py-3 px-6 text-center flex">
                               <button
                                 onClick={() => toggleUserDetails(user._id)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1 mx-auto"
                               >
                                 <FaEye className="text-sm" />
                                 <span>{expandedUser === user._id ? 'Hide Details' : 'View Details'}</span>
+                              </button>
+                              <button
+                                // onClick={() => handleDeleteUser(user._id)}
+                                className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1 mx-auto"
+                              >
+                                <FaDeleteLeft className="text-sm" />
                               </button>
                             </td>
                           </tr>

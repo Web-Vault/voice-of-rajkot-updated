@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt, FaChair, FaTicketAlt, FaUsers, FaRupeeSign, FaImage } from 'react-icons/fa';
-import { getEventBookings } from '../../services/bookingService';
+import { FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt, FaChair, FaTicketAlt, FaUsers, FaRupeeSign, FaImage, FaCheck, FaTimes } from 'react-icons/fa';
+import { getEventBookings, verifyBooking, rejectBooking } from '../../services/bookingService';
 import { getAllEvents } from '../../services/eventService';
 import { format } from 'date-fns';
 import './EventBookings.css';
@@ -22,6 +22,12 @@ const EventBookings = () => {
     verifiedPayments: 0,
     pendingPayments: 0
   });
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
+  const [actionSuccess, setActionSuccess] = useState(null);
 
   useEffect(() => {
     const fetchEventAndBookings = async () => {
@@ -47,7 +53,10 @@ const EventBookings = () => {
         // Calculate statistics
         const totalBookings = eventBookings.length;
         const totalSeats = eventBookings.reduce((sum, booking) => sum + booking.numberOfSeats, 0);
-        const totalRevenue = eventBookings.reduce((sum, booking) => sum + booking.totalAmount, 0);
+        // Only count revenue from verified payments
+        const totalRevenue = eventBookings
+          .filter(booking => booking.paymentStatus === 'verified')
+          .reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
         const performerBookings = eventBookings.filter(booking => booking.isPerformer).length;
         const audienceBookings = totalBookings - performerBookings;
         const verifiedPayments = eventBookings.filter(booking => booking.paymentStatus === 'verified').length;
@@ -74,6 +83,71 @@ const EventBookings = () => {
       fetchEventAndBookings();
     }
   }, [eventId]);
+
+  const refreshStats = (updatedBookings) => {
+    const totalBookings = updatedBookings.length;
+    const totalSeats = updatedBookings.reduce((sum, booking) => sum + booking.numberOfSeats, 0);
+    // Only count revenue from verified payments
+    const totalRevenue = updatedBookings
+      .filter(booking => booking.paymentStatus === 'verified')
+      .reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
+    const performerBookings = updatedBookings.filter(booking => booking.isPerformer).length;
+    const audienceBookings = totalBookings - performerBookings;
+    const verifiedPayments = updatedBookings.filter(booking => booking.paymentStatus === 'verified').length;
+    const pendingPayments = updatedBookings.filter(booking => booking.paymentStatus === 'pending' || !booking.paymentStatus).length;
+    setStats({ totalBookings, totalSeats, totalRevenue, performerBookings, audienceBookings, verifiedPayments, pendingPayments });
+  };
+
+  const handleVerify = async (booking) => {
+    try {
+      setActionLoading(true);
+      setActionError(null);
+      setActionSuccess(null);
+      const res = await verifyBooking(booking._id);
+      const updated = bookings.map(b => b._id === booking._id ? { ...b, paymentStatus: 'verified' } : b);
+      setBookings(updated);
+      refreshStats(updated);
+      setActionSuccess('Payment verified and confirmation email sent.');
+    } catch (err) {
+      setActionError(err.message || 'Failed to verify booking');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openRejectModal = (booking) => {
+    setSelectedBooking(booking);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleRejectConfirm = async () => {
+    if (!selectedBooking) return;
+    try {
+      setActionLoading(true);
+      setActionError(null);
+      setActionSuccess(null);
+      const res = await rejectBooking(selectedBooking._id, rejectReason);
+      const updated = bookings.map(b => b._id === selectedBooking._id ? { ...b, paymentStatus: 'rejected', rejectionReason: rejectReason } : b);
+      setBookings(updated);
+      refreshStats(updated);
+      if (res?.event) {
+        setEvent(prev => prev ? { ...prev, bookedSeats: res.event.bookedSeats } : prev);
+      } else {
+        // Fallback: decrement by booking.numberOfSeats if server didn't return event
+        const seatsToFree = selectedBooking?.numberOfSeats || 0;
+        setEvent(prev => prev ? { ...prev, bookedSeats: Math.max(0, (prev.bookedSeats || 0) - seatsToFree) } : prev);
+      }
+      setActionSuccess('Booking rejected. Email sent with reason and seat updated.');
+      setShowRejectModal(false);
+      setSelectedBooking(null);
+      setRejectReason('');
+    } catch (err) {
+      setActionError(err.message || 'Failed to reject booking');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -265,6 +339,9 @@ const EventBookings = () => {
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Payment Proof
                     </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -335,6 +412,32 @@ const EventBookings = () => {
                           <span className="text-gray-400 text-center block">-</span>
                         )}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          {(booking.paymentStatus !== 'verified') && (
+                            <button
+                              onClick={() => handleVerify(booking)}
+                              disabled={actionLoading}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+                              title="Verify payment"
+                            >
+                              <FaCheck className="text-white" />
+                              Verify
+                            </button>
+                          )}
+                          {(booking.paymentStatus !== 'rejected') && (
+                            <button
+                              onClick={() => openRejectModal(booking)}
+                              disabled={actionLoading}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full bg-red-600 text-white hover:bg-red-700 shadow-sm disabled:opacity-50"
+                              title="Reject booking"
+                            >
+                              <FaTimes className="text-white" />
+                              Reject
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -342,6 +445,45 @@ const EventBookings = () => {
             </div>
           )}
         </div>
+
+        {/* Action feedback */}
+        {(actionError || actionSuccess) && (
+          <div className="mt-4">
+            {actionError && <div className="text-red-600 text-sm">{actionError}</div>}
+            {actionSuccess && <div className="text-green-600 text-sm">{actionSuccess}</div>}
+          </div>
+        )}
+        
+        {/* Reject Modal */}
+        {showRejectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+              <h3 className="text-lg font-semibold mb-4">Reject Booking</h3>
+              <p className="text-sm text-gray-600 mb-2">Please provide a reason for rejection. This will be emailed to the user.</p>
+              <textarea
+                className="w-full border border-gray-300 rounded-md p-2 h-24 focus:outline-none focus:ring-2 focus:ring-red-300"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Reason for rejection"
+              />
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  onClick={() => { setShowRejectModal(false); setSelectedBooking(null); setRejectReason(''); }}
+                  className="px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRejectConfirm}
+                  disabled={actionLoading || !rejectReason.trim()}
+                  className="px-4 py-2 text-sm rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
+                >
+                  Confirm Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
     </div>

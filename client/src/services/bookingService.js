@@ -185,12 +185,34 @@ export const uploadPaymentScreenshotToBackend = async (bookingId, file) => {
   }
 };
 
+// Verify booking payment (admin)
+export const verifyBooking = async (bookingId) => {
+  try {
+    const response = await api.post(`/${bookingId}/verify`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { success: false, message: 'Failed to verify booking' };
+  }
+};
+
+// Reject booking payment (admin) with reason
+export const rejectBooking = async (bookingId, reason) => {
+  try {
+    const response = await api.post(`/${bookingId}/reject`, { reason });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { success: false, message: 'Failed to reject booking' };
+  }
+};
+
 const bookingService = {
   getUserBookings,
   getEventBookings,
   createBooking,
   uploadPaymentScreenshot, // Keep the direct Cloudinary upload as backup
-  uploadPaymentScreenshotToBackend // New backend upload method
+  uploadPaymentScreenshotToBackend, // New backend upload method
+  verifyBooking,
+  rejectBooking
 };
 
 export default bookingService;

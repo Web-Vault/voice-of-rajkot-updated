@@ -1,5 +1,6 @@
 import EventBooking from '../models/EventBooking.js';
 import Event from '../models/Event.js';
+import { sendEmail } from '../utils/mailer.js';
 import { v4 as uuidv4 } from 'uuid';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
@@ -329,6 +330,129 @@ export const cancelBooking = async (req, res) => {
     });
   } catch (error) {
     console.error('Cancel booking error:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Verify booking payment (Admin)
+// @route   POST /api/bookings/:id/verify
+// @access  Private (Admin)
+export const verifyBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const booking = await EventBooking.findById(id).populate('event', 'name dateTime venue price');
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    if (booking.paymentStatus === 'verified') {
+      return res.status(400).json({ success: false, message: 'Booking already verified' });
+    }
+
+    booking.paymentStatus = 'verified';
+    booking.updatedAt = Date.now();
+    await booking.save();
+
+    // Send confirmation email to user
+    try {
+      const subject = `Booking Confirmed: ${booking.event?.name || 'Event'}`;
+      const eventDate = booking.event?.dateTime ? new Date(booking.event.dateTime).toLocaleString() : '';
+      const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2 style="color: #16a34a;">Your booking is confirmed! 🎉</h2>
+          <p>Dear ${booking.username},</p>
+          <p>Your payment has been verified and your booking is confirmed for the event.</p>
+          <ul>
+            <li><strong>Event:</strong> ${booking.event?.name || '-'}</li>
+            <li><strong>Date & Time:</strong> ${eventDate}</li>
+            <li><strong>Venue:</strong> ${booking.event?.venue || '-'}</li>
+            <li><strong>Ticket ID:</strong> ${booking.ticketId}</li>
+            <li><strong>Seats:</strong> ${booking.numberOfSeats}</li>
+            <li><strong>Total Amount:</strong> ₹${booking.totalAmount}</li>
+          </ul>
+          <p>We look forward to welcoming you to the event!</p>
+          <p style="color:#555">— Voice of Rajkot Team</p>
+        </div>
+      `;
+      await sendEmail(booking.email, subject, html);
+    } catch (mailErr) {
+      console.error('Error sending verification email:', mailErr);
+      // Do not fail the API on email errors
+    }
+
+    return res.status(200).json({ success: true, message: 'Booking verified successfully', booking });
+  } catch (error) {
+    console.error('Verify booking error:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Reject booking payment (Admin)
+// @route   POST /api/bookings/:id/reject
+// @access  Private (Admin)
+export const rejectBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const booking = await EventBooking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    if (booking.paymentStatus === 'rejected') {
+      return res.status(400).json({ success: false, message: 'Booking already rejected' });
+    }
+
+    const performerUser = booking.user;
+    booking.paymentStatus = 'rejected';
+    booking.rejectionReason = reason || 'No reason provided';
+    // Remove performer from event performers
+    const eventBooked = await Event.findById(booking.event);
+    if (eventBooked) {
+      eventBooked.performers.forEach(performer => {
+        if (performer.toString() === performerUser._id.toString()) {
+          eventBooked.performers.pull(performerUser._id);
+        }
+      });
+    }
+    booking.updatedAt = Date.now();
+    await booking.save();
+
+    // Free all seats reserved by this booking
+    if (eventBooked) {
+      const seatsToFree = booking.numberOfSeats || 0;
+      eventBooked.bookedSeats = Math.max(0, (eventBooked.bookedSeats || 0) - seatsToFree);
+      await eventBooked.save();
+    }
+
+    // Send rejection email to user
+    try {
+      const subject = `Booking Not Confirmed: ${eventBooked?.name || 'Event'}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2 style="color: #dc2626;">Your booking was not confirmed</h2>
+          <p>Dear ${booking.username},</p>
+          <p>We’re sorry to inform you that your booking could not be confirmed.</p>
+          <ul>
+            <li><strong>Ticket ID:</strong> ${booking.ticketId}</li>
+            <li><strong>Seats requested:</strong> ${booking.numberOfSeats}</li>
+          </ul>
+          <p><strong>Reason:</strong> ${booking.rejectionReason}</p>
+          <p>If you believe this is a mistake, please contact support.</p>
+          <p style="color:#555">— Voice of Rajkot Team</p>
+        </div>
+      `;
+      await sendEmail(booking.email, subject, html);
+    } catch (mailErr) {
+      console.error('Error sending rejection email:', mailErr);
+      // Continue without failing the request
+    }
+
+    return res.status(200).json({ success: true, message: 'Booking rejected successfully', booking, eventBooked });
+  } catch (error) {
+    console.error('Reject booking error:', error);
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };

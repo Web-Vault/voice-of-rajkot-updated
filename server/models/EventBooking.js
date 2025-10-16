@@ -46,7 +46,6 @@ const eventBookingSchema = new mongoose.Schema({
         type: Number,
         default: 5,
         max: 5,
-        min: 5,
     },
     totalAmount: {
         type: Number,
@@ -72,6 +71,9 @@ const eventBookingSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'verified', 'rejected'],
         default: 'pending',
+    },
+    rejectionReason: {
+        type: String,
     },
 });
 

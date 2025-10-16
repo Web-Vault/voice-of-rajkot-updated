@@ -55,7 +55,7 @@ const AppEvents = () => {
         <div className="events-tile-header-divider"></div>
         <div className="events-tile-carousel-wrap relative">
           <div className="events-tile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mx-auto max-w-6xl px-4 md:px-0">
-            {events.map((event) => (
+            {events.filter(event => new Date(event.dateTime) > new Date()).map((event) => (
               <div
                 key={event._id}
                 className="event-tile-item group relative w-full"

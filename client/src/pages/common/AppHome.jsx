@@ -148,7 +148,7 @@ const AppHome = () => {
       }
     };
     fetchPosts();
-  }, [posts]);
+  }, []);
 
   // Memoize so the letters don't change on every render
   const floatingLetters = useMemo(() => getRandomLetters(letterPool, 24), []);

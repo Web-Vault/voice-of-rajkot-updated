@@ -195,7 +195,10 @@ const MyProfile = () => {
                     <span className="font-medium">Venue:</span> {ticket.event.venue}
                   </div>
                   <div className="ticket-event-info text-gray-700 mb-1">
-                    <span className="font-medium">Seats:</span> {ticket.numberOfSeats} &nbsp;|&nbsp;Attendees: {ticket.membersName?.join(', ')}
+                    <span className="font-medium">Type: </span> {ticket.isPerformer ? 'Performer' : 'Audience'}
+                  </div>
+                  <div className="ticket-event-info text-gray-700 mb-1">
+                    <span className="font-medium">Seats:</span> {ticket.numberOfSeats} &nbsp;|&nbsp;Attendees: {ticket.isPerformer ? ticket.username : ticket.membersName?.join(', ')}
                   </div>
                   <div className="ticket-event-info text-gray-500 text-sm mb-2">
                     <span className="font-medium">Ticket ID:</span> {ticket.ticketId} &nbsp;|&nbsp;
@@ -251,12 +254,14 @@ const MyProfile = () => {
                     </div>
                     <div className="ticket-info-item">
                       <div className="info-label">Amount Paid</div>
-                      <div className="info-value">₹{currentTicket.isPerformer ? 0 : (currentTicket.numberOfSeats * 100)}</div>
+                      <div className="info-value">₹{currentTicket.isPerformer ? currentTicket.totalAmount : (currentTicket.numberOfSeats * currentTicket.event.price)}</div>
                     </div>
                   </div>
                   <div className="ticket-attendees">
                     <div className="info-label">Attendees</div>
-                    <div className="info-value">{currentTicket.membersName?.join(', ')}</div>
+                    <div className="info-value">{currentTicket.isPerformer ? currentTicket.username : currentTicket.membersName?.join(', ')} 
+                      {/* <span className="text-sm text-gray-500">{currentTicket.isPerformer ? ' (Performer)' : ''}</span> */}
+                    </div>
                   </div>
                   <div className="ticket-info-row">
                     <div className="ticket-info-item">
