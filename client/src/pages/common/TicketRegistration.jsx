@@ -382,7 +382,7 @@ const TicketRegistration = () => {
         // UPI details
         const upiID = "manalidudhrejiya@okhdfcbank"; 
         // const upiID = "aryanlathigara@okhdfcbank"; 
-        const name = "Rhythm Of Heart"; 
+        const name = "Voice of Rajkot"; 
         const amount = type === 'audience' ? audienceTotal : performerTotal;
         
         // Create UPI payment link
@@ -470,7 +470,7 @@ const TicketRegistration = () => {
                 <div className="upi-details">
                   <div className="upi-id">UPI ID: manalidudhrejiya@okhdfcbank</div>
 
-                  <div className="upi-name">Rhythm Of Heart</div>
+                  <div className="upi-name">Voice of Rajkot</div>
                 </div>
               </div>
               

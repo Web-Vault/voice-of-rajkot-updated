@@ -128,7 +128,7 @@ const AuthRegister = () => {
           <div className="auth-logo-big flex items-center justify-center rounded-2xl bg-white/10 shadow-lg mb-6">
             <span className="text-5xl font-extrabold">R</span>
           </div>
-          <h1 className="text-3xl font-bold mb-2 tracking-wide">rhythm of heart</h1>
+          <h1 className="text-3xl font-bold mb-2 tracking-wide">Voice of Rajkot</h1>
           <p className="text-lg font-medium mb-8 opacity-90">Join the community. Share your art.</p>
         </div>
         <div className="absolute bottom-8 left-0 w-full flex justify-center opacity-30">

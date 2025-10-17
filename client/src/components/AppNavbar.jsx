@@ -36,10 +36,10 @@ const AppNavbar = () => {
                 className="navbar-logo flex items-center justify-center text-white font-extrabold text-2xl rounded-full bg-indigo-600 shadow-md"
                 style={{ width: "2.5rem", height: "2.5rem" }}
               >
-                R
+                V
               </span>
               <span className="navbar-title font-semibold text-lg tracking-wide text-indigo-800">
-                rhythm of heart
+                Voice of Rajkot
               </span>
             </Link>
           </div>

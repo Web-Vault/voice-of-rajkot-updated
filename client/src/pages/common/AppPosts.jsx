@@ -10,6 +10,8 @@ const AppPosts = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const { user } = useAuth();
   const postsPerPage = 10; // Number of posts to load at once
+  const [expandedPosts, setExpandedPosts] = useState({});
+  const POST_PREVIEW_CHAR_LIMIT = 200;
 
   const fetchPosts = useCallback(async (append = false) => {
     try {
@@ -237,7 +239,20 @@ const AppPosts = () => {
                   
                   <h4 className="post-title text-xl font-bold text-gray-800 mb-3">{post.heading}</h4>
 
-                  <p className="post-content text-gray-600 leading-relaxed mb-4">{post.content}</p>
+                  <p className="post-content text-gray-600 leading-relaxed mb-2 whitespace-pre-wrap break-words">
+                    {expandedPosts[post._id] ? (post.content || '') : (post.content || '').slice(0, POST_PREVIEW_CHAR_LIMIT)}
+                    {((post.content || '').length > POST_PREVIEW_CHAR_LIMIT && !expandedPosts[post._id]) ? '…' : ''}
+                  </p>
+                  {((post.content || '').length > POST_PREVIEW_CHAR_LIMIT) && (
+                    <div className="mb-4">
+                      <button 
+                        className="px-3 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium rounded-full transition-colors text-sm"
+                        onClick={() => setExpandedPosts(prev => ({...prev, [post._id]: !prev[post._id]}))}
+                      >
+                        {expandedPosts[post._id] ? 'Show less' : 'Read more'}
+                      </button>
+                    </div>
+                  )}
                   
                   <div className="post-tags flex flex-wrap gap-2 mb-4">
                     {post.tags?.map((tag) => (

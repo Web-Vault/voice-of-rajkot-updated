@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { getUserProfile } from "../../services/authService";
 import { Tab } from "@headlessui/react";
+import { createPost } from "../../services/postService";
 import { useNavigate } from "react-router-dom";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -18,6 +19,13 @@ const ArtistProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [refreshData, setRefreshData] = useState(0);
+  const [expandedPostIds, setExpandedPostIds] = useState({});
+  const POST_PREVIEW_CHAR_LIMIT = 200;
+  const [newPostHeading, setNewPostHeading] = useState("");
+  const [newPostContent, setNewPostContent] = useState("");
+  const [postingNewPost, setPostingNewPost] = useState(false);
+  const [postFormError, setPostFormError] = useState("");
+  const [postFormSuccess, setPostFormSuccess] = useState("");
 
 
   useEffect(() => {
@@ -161,6 +169,37 @@ const ArtistProfile = () => {
       setEditValue("");
     } catch (error) {
       console.error("Error saving field:", error);
+    }
+  };
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    setPostFormError("");
+    setPostFormSuccess("");
+
+    // Basic validation
+    if (!newPostHeading.trim() || !newPostContent.trim()) {
+      setPostFormError("Please provide both heading and content.");
+      return;
+    }
+
+    try {
+      setPostingNewPost(true);
+      const res = await createPost({ heading: newPostHeading.trim(), content: newPostContent.trim() });
+      if (res?.success && res?.post) {
+        // Prepend new post to list
+        setPosts((prev) => [res.post, ...prev]);
+        setPostFormSuccess("Post created successfully.");
+        setNewPostHeading("");
+        setNewPostContent("");
+      } else {
+        setPostFormError(res?.message || "Failed to create post.");
+      }
+    } catch (err) {
+      const msg = err?.message || err?.error || (typeof err === 'string' ? err : 'Failed to create post');
+      setPostFormError(msg);
+    } finally {
+      setPostingNewPost(false);
     }
   };
 
@@ -488,14 +527,69 @@ const ArtistProfile = () => {
 
           {/* Posts Panel */}
           <Tab.Panel>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* New Post Form (only performers) */}
+            {profile?.isPerformer && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 className="text-lg font-semibold mb-4">Create a new post</h3>
+                <form onSubmit={handleCreatePost} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Heading</label>
+                    <input
+                      type="text"
+                      value={newPostHeading}
+                      onChange={(e) => setNewPostHeading(e.target.value)}
+                      className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Enter a catchy title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    <textarea
+                      rows={4}
+                      value={newPostContent}
+                      onChange={(e) => setNewPostContent(e.target.value)}
+                      className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Write something engaging..."
+                    />
+                  </div>
+                  {postFormError && (
+                    <p className="text-sm text-red-600">{postFormError}</p>
+                  )}
+                  {postFormSuccess && (
+                    <p className="text-sm text-green-600">{postFormSuccess}</p>
+                  )}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={postingNewPost}
+                      className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+                    >
+                      {postingNewPost ? "Posting..." : "Post"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+            <div className="columns-1 md:columns-2 lg:columns-3">
               {posts.map((post) => (
                 <div
                   key={post._id}
-                  className="bg-white rounded-lg shadow-md p-6"
+                  className="inline-block w-full bg-white rounded-lg shadow-md p-6 mb-6"
+                  style={{ breakInside: 'avoid-column' }}
                 >
                   <h3 className="text-xl font-semibold mb-2">{post.heading}</h3>
-                  <p className="text-gray-600 mb-4">{post.content}</p>
+                  <p className="text-gray-600 mb-2 whitespace-pre-wrap break-words">
+                    {expandedPostIds[post._id] ? (post.content || '') : (post.content || '').slice(0, POST_PREVIEW_CHAR_LIMIT)}
+                    {((post.content || '').length > POST_PREVIEW_CHAR_LIMIT && !expandedPostIds[post._id]) ? '…' : ''}
+                  </p>
+                  {((post.content || '').length > POST_PREVIEW_CHAR_LIMIT) && (
+                    <button
+                      className="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium rounded-full transition-colors text-sm mb-4"
+                      onClick={() => setExpandedPostIds(prev => ({...prev, [post._id]: !prev[post._id]}))}
+                    >
+                      {expandedPostIds[post._id] ? 'Show less' : 'Read more'}
+                    </button>
+                  )}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags?.map((tag, index) => (
                       <span

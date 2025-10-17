@@ -177,7 +177,7 @@ const AppHome = () => {
             </h1>
             <p className="hero-subtext">
               Discover exceptional poetry events, connect with talented poets,
-              and immerse yourself in the beauty of words. The rhythm of heart
+              and immerse yourself in the beauty of words. The vocie of rajkot
               platform brings poetry enthusiasts together.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
@@ -317,13 +317,13 @@ const AppHome = () => {
                 key={idx}
                 className="step-card group w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 relative"
               >
-                <div className="step-number absolute -top-4 -right-4 w-20 h-20 flex items-center justify-center rotate-12 bg-indigo-50 rounded-full z-2">
+                <div className={`step-number w-20 h-20 flex items-center justify-center rotate-12 bg-indigo-50 rounded-full z-2 left-1/2`}>
                   <span className="text-4xl font-bold text-indigo-200 -rotate-12">
                     {idx + 1}
                   </span>
                 </div>
 
-                <div className="step-icon-container relative mb-8">
+                <div className="step-icon-container relative mb-8 mx-auto">
                   <div className="step-icon-bg w-16 h-16 flex items-center justify-center bg-indigo-50 rounded-2xl relative z-10 group-hover:bg-indigo-100 transition-all duration-300">
                     {step.icon}
                   </div>
@@ -331,10 +331,10 @@ const AppHome = () => {
                 </div>
 
                 <div className="step-content relative z-10">
-                  <h3 className="step-title text-2xl font-bold mb-4 text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">
+                  <h3 className="step-title text-2xl font-bold mb-4 text-gray-800 group-hover:text-indigo-600 transition-colors duration-300 text-center">
                     {step.title}
                   </h3>
-                  <p className="step-description text-gray-600 leading-relaxed">
+                  <p className="step-description text-gray-600 leading-relaxed text-center">
                     {step.desc}
                   </p>
                 </div>
@@ -1429,7 +1429,6 @@ const AppHome = () => {
 .step-number {
   position: absolute;
   top: -1.5rem;
-  left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   color: #fff;
@@ -1444,6 +1443,10 @@ const AppHome = () => {
   box-shadow: 0 6px 20px #6366f144;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.step-card:hover .step-number {
+        right: -17%;
 }
 
 .howitworks-step-card:hover .step-number {

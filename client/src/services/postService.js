@@ -76,12 +76,23 @@ export const getPostsByTag = async (tag, page = 1, limit = 10) => {
   }
 };
 
+// Create a new post (performers only)
+export const createPost = async ({ heading, content, tags, image }) => {
+  try {
+    const response = await api.post(`/`, { heading, content, tags, image });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { success: false, message: 'Failed to create post' };
+  }
+};
+
 const postService = {
   getAllPosts,
   getPostById,
   getPostsByAuthor,
   togglePostLike,
-  getPostsByTag
+  getPostsByTag,
+  createPost
 };
 
 export default postService;

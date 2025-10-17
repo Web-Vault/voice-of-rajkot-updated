@@ -7,8 +7,8 @@ const AppFooter = () => (
     <div className="footer-simple-main">
       {/* Brand */}
       <div className="footer-simple-brand">
-        <span className="footer-simple-logo">R</span>
-        <span className="footer-simple-title">rhythm of heart</span>
+        <span className="footer-simple-logo">V</span>
+        <span className="footer-simple-title">Voice of Rajkot</span>
       </div>
       {/* Links */}
       <nav className="footer-simple-links">
@@ -25,7 +25,7 @@ const AppFooter = () => (
       {/* Contact/Social */}
       <div className="footer-simple-contact">
         <a href="mailto:info@rhythmofheart.com" className="footer-simple-link">
-          info@rhythmofheart.com
+          info@voiceofrajkot.com
         </a>
         <div className="footer-simple-socials">
           <a href="#" aria-label="Instagram" className="footer-simple-social">
@@ -43,7 +43,7 @@ const AppFooter = () => (
         </div>
       </div>
     </div>
-    <div className="footer-simple-sub">© 2025 rhythm of heart. All rights reserved.</div>
+    <div className="footer-simple-sub">© 2025 voice of rajkot. All rights reserved.</div>
   </footer>
 
 <style>
