@@ -2,156 +2,156 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 const letterPool = [
-  { char: 'અ' }, // Gujarati
-  { char: 'क' }, // Hindi
-  { char: 'A' }, // English
-  { char: 'ش' }, // Urdu/Arabic
-  { char: '诗' }, // Chinese (poetry)
-  { char: 'क' }, // Hindi
-  { char: 'B' }, // English
-  { char: 'ગ' }, // Gujarati
-  { char: 'م' }, // Urdu/Arabic
-  { char: '字' }, // Chinese
-  { char: 'R' }, // English
-  { char: 'પ' }, // Gujarati
-  { char: 'न' }, // Hindi
-  { char: 'C' }, // English
-  { char: 'ક' }, // Hindi
-  { char: 'દ' }, // Gujarati
+      { char: 'અ' }, // Gujarati
+      { char: 'क' }, // Hindi
+      { char: 'A' }, // English
+      { char: 'ش' }, // Urdu/Arabic
+      { char: '诗' }, // Chinese (poetry)
+      { char: 'क' }, // Hindi
+      { char: 'B' }, // English
+      { char: 'ગ' }, // Gujarati
+      { char: 'م' }, // Urdu/Arabic
+      { char: '字' }, // Chinese
+      { char: 'R' }, // English
+      { char: 'પ' }, // Gujarati
+      { char: 'न' }, // Hindi
+      { char: 'C' }, // English
+      { char: 'ક' }, // Hindi
+      { char: 'દ' }, // Gujarati
 ];
 
 function getRandomLetters(pool, count) {
-  const arr = [...pool];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, count).map((char) => ({ char: char.char }));
+      const arr = [...pool];
+      for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.slice(0, count).map((char) => ({ char: char.char }));
 }
 
 const AuthLogin = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '', general: '' });
-  // Dummy: toggle this to test artist/normal user redirection
-  const isArtist = false;
-  const { updateAuthState } = useAuth();
+      const navigate = useNavigate();
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [errors, setErrors] = useState({ email: '', password: '', general: '' });
+      // Dummy: toggle this to test artist/normal user redirection
+      const isArtist = false;
+      const { updateAuthState } = useAuth();
 
-  // Memoize so the letters don't change on every render
-  const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
+      // Memoize so the letters don't change on every render
+      const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
 
-  function validate() {
-    let valid = true;
-    const newErrors = { email: '', password: '', general: '' };
-    if (!email) {
-      newErrors.email = 'Email is required.';
-      valid = false;
-    } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      newErrors.email = 'Enter a valid email address.';
-      valid = false;
-    }
-    if (!password) {
-      newErrors.password = 'Password is required.';
-      valid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
-      valid = false;
-    }
-    setErrors(newErrors);
-    return valid;
-  }
-
-  const [loading, setLoading] = useState(false);
-
-  async function handleLogin(e) {
-    e.preventDefault();
-    if (!validate()) return;
-    
-    setLoading(true);
-    setErrors({ email: '', password: '', general: '' });
-    
-    try {
-      // Import here to avoid circular dependencies
-      const { login } = await import('../../services/authService');
-      const response = await login(email, password);
-      console.log("response", response);
-      if (response.success) {
-        updateAuthState();
-
-        if (response.user.isAdmin) {
-          navigate('/admin/dashboard');
-        } else {
-            if (response.user.isPerformer) {
-              // Check if user is an artist to redirect appropriately
-                navigate('/artist/profile');
-            } else {
-                navigate('/');
+      function validate() {
+            let valid = true;
+            const newErrors = { email: '', password: '', general: '' };
+            if (!email) {
+                  newErrors.email = 'Email is required.';
+                  valid = false;
+            } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                  newErrors.email = 'Enter a valid email address.';
+                  valid = false;
             }
-        }
-        
+            if (!password) {
+                  newErrors.password = 'Password is required.';
+                  valid = false;
+            } else if (password.length < 6) {
+                  newErrors.password = 'Password must be at least 6 characters.';
+                  valid = false;
+            }
+            setErrors(newErrors);
+            return valid;
       }
-    } catch (error) {
-      setErrors({
-        ...errors,
-        general: error.message || 'Login failed. Please check your credentials.'
-      });
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  return (
-    <div className="auth-split-bg min-h-screen flex">
-      {/* Brand/Visual Section */}
-      <div className="auth-split-left hidden md:flex flex-col justify-center items-center w-1/2 bg-gradient-to-br from-indigo-700 via-indigo-500 to-blue-400 text-white p-12 relative overflow-hidden">
-        {/* Animated Boiling Bubbles Letters */}
-        <div className="boiling-letters">
-          {floatingLetters.map((letter, i) => (
-            <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
-          ))}
-        </div>
-        <div className="flex flex-col items-center z-10 relative">
-          <div className="auth-logo-big flex items-center justify-center rounded-2xl bg-white/10 shadow-lg mb-6">
-            <span className="text-5xl font-extrabold">V</span>
-          </div>
-          <h1 className="text-3xl font-bold mb-2 tracking-wide">Voice of Rajkot</h1>
-          <p className="text-lg font-medium mb-8 opacity-90">Where Rajkot speaks, artists shine.</p>
-        </div>
-        <div className="absolute bottom-8 left-0 w-full flex justify-center opacity-30">
-          <svg width="120" height="40"><ellipse cx="60" cy="20" rx="60" ry="18" fill="white"/></svg>
-        </div>
-      </div>
-      {/* Themed, Modern Login Form Section */}
-      <div className="auth-split-right flex flex-col justify-center items-center w-full md:w-1/2 bg-white px-6 py-12 md:px-16 min-h-screen">
-        <div className="themed-card-form w-full max-w-md relative">
-          <div className="px-8 py-10 md:px-10 md:py-12">
-            <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Sign in to your account</h2>
-            <p className="mb-8 text-gray-500 text-base text-center">Welcome back! Please enter your details below.</p>
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <label htmlFor="email" className="themed-label">Email</label>
-                <input id="email" type="email" className={`themed-input${errors.email ? ' input-error' : ''}`} value={email} onChange={e => setEmail(e.target.value)} required />
-                {errors.email && <span className="error-msg">{errors.email}</span>}
-              </div>
-              <div>
-                <label htmlFor="password" className="themed-label">Password</label>
-                <input id="password" type="password" className={`themed-input${errors.password ? ' input-error' : ''}`} value={password} onChange={e => setPassword(e.target.value)} required />
-                {errors.password && <span className="error-msg">{errors.password}</span>}
-              </div>
-              {errors.general && <span className="error-msg block mb-2 text-center">{errors.general}</span>}
-              <button className="themed-btn w-full mt-2" type="submit" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </form>
-            <div className="flex justify-between mt-8 text-sm">
-              <Link to="/register" className="text-indigo-600 hover:underline">Register</Link>
-              <Link to="/forgot-password" className="text-indigo-600 hover:underline">Forgot Password?</Link>
-            </div>
-          </div>
-        </div>
-      </div>
-      <style>{`
+      const [loading, setLoading] = useState(false);
+
+      async function handleLogin(e) {
+            e.preventDefault();
+            if (!validate()) return;
+
+            setLoading(true);
+            setErrors({ email: '', password: '', general: '' });
+
+            try {
+                  // Import here to avoid circular dependencies
+                  const { login } = await import('../../services/authService');
+                  const response = await login(email, password);
+                  console.log("response", response);
+                  if (response.success) {
+                        updateAuthState();
+
+                        if (response.user.isAdmin) {
+                              navigate('/admin/dashboard');
+                        } else {
+                              if (response.user.isPerformer) {
+                                    // Check if user is an artist to redirect appropriately
+                                    navigate('/artist/profile');
+                              } else {
+                                    navigate('/');
+                              }
+                        }
+
+                  }
+            } catch (error) {
+                  setErrors({
+                        ...errors,
+                        general: error.message || 'Login failed. Please check your credentials.'
+                  });
+            } finally {
+                  setLoading(false);
+            }
+      }
+
+      return (
+            <div className="auth-split-bg min-h-screen flex">
+                  {/* Brand/Visual Section */}
+                  <div className="auth-split-left hidden md:flex flex-col justify-center items-center w-1/2 bg-gradient-to-br from-indigo-700 via-indigo-500 to-blue-400 text-white p-12 relative overflow-hidden">
+                        {/* Animated Boiling Bubbles Letters */}
+                        <div className="boiling-letters">
+                              {floatingLetters.map((letter, i) => (
+                                    <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
+                              ))}
+                        </div>
+                        <div className="flex flex-col items-center z-10 relative">
+                              <div className="auth-logo-big flex items-center justify-center rounded-2xl bg-white/10 shadow-lg mb-6">
+                                    <span className="text-5xl font-extrabold">V</span>
+                              </div>
+                              <h1 className="text-3xl font-bold mb-2 tracking-wide">Voice of Rajkot</h1>
+                              <p className="text-lg font-medium mb-8 opacity-90">Where Rajkot speaks, artists shine.</p>
+                        </div>
+                        <div className="absolute bottom-8 left-0 w-full flex justify-center opacity-30">
+                              <svg width="120" height="40"><ellipse cx="60" cy="20" rx="60" ry="18" fill="white" /></svg>
+                        </div>
+                  </div>
+                  {/* Themed, Modern Login Form Section */}
+                  <div className="auth-split-right flex flex-col justify-center items-center w-full md:w-1/2 bg-white px-6 py-12 md:px-16 min-h-screen">
+                        <div className="themed-card-form w-full max-w-md relative">
+                              <div className="px-8 py-10 md:px-10 md:py-12">
+                                    <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Sign in to your account</h2>
+                                    <p className="mb-8 text-gray-500 text-base text-center">Welcome back! Please enter your details below.</p>
+                                    <form onSubmit={handleLogin} className="space-y-6">
+                                          <div>
+                                                <label htmlFor="email" className="themed-label">Email</label>
+                                                <input id="email" type="email" className={`themed-input${errors.email ? ' input-error' : ''}`} value={email} onChange={e => setEmail(e.target.value)} required />
+                                                {errors.email && <span className="error-msg">{errors.email}</span>}
+                                          </div>
+                                          <div>
+                                                <label htmlFor="password" className="themed-label">Password</label>
+                                                <input id="password" type="password" className={`themed-input${errors.password ? ' input-error' : ''}`} value={password} onChange={e => setPassword(e.target.value)} required />
+                                                {errors.password && <span className="error-msg">{errors.password}</span>}
+                                          </div>
+                                          {errors.general && <span className="error-msg block mb-2 text-center">{errors.general}</span>}
+                                          <button className="themed-btn w-full mt-2" type="submit" disabled={loading}>
+                                                {loading ? 'Logging in...' : 'Login'}
+                                          </button>
+                                    </form>
+                                    <div className="flex justify-between mt-8 text-sm">
+                                          <Link to="/register" className="text-indigo-600 hover:underline">Register</Link>
+                                          <Link to="/forgot-password" className="text-indigo-600 hover:underline">Forgot Password?</Link>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
+                  <style>{`
         .auth-split-bg {
           min-height: 100vh;
           background: #f8fafc;
@@ -312,8 +312,8 @@ const AuthLogin = () => {
           }
         }
       `}</style>
-    </div>
-  );
+            </div>
+      );
 };
 
 export default AuthLogin;

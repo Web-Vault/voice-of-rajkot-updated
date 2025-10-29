@@ -23,20 +23,20 @@ connectDB();
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://rhythm-of-heart-app.onrender.com'],
-    credentials: true
+      origin: ['http://localhost:3000', 'https://rhythm-of-heart-app.onrender.com'],
+      credentials: true
 }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mongoose
-        .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(() => console.log("✅ MongoDB Connected Successfully!"))
-        .catch((err) => {
-                console.error("❌ MongoDB Connection Error:", err);
-                process.exit(1);
-        });
+      .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+      .then(() => console.log("✅ MongoDB Connected Successfully!"))
+      .catch((err) => {
+            console.error("❌ MongoDB Connection Error:", err);
+            process.exit(1);
+      });
 
 
 // API Routes
@@ -47,12 +47,12 @@ app.use('/api/posts', postRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
-        res.status(200).json({ message: "🚀 API is running..." });
+      res.status(200).json({ message: "🚀 API is running..." });
 });
 
 // 404 Error Handling Middleware
 app.use((req, res, next) => {
-        res.status(404).json({ success: false, message: "❌ Route Not Found!" });
+      res.status(404).json({ success: false, message: "❌ Route Not Found!" });
 });
 
 // Start Server

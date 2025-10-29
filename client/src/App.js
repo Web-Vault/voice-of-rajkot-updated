@@ -28,56 +28,56 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import ShippingPolicy from "./pages/ShippingPolicy";
 
 function AppRoutes() {
-  const location = useLocation();
-  // const isArtistDashboard = location.pathname.startsWith("/artist/");
-  const hideNavbar = location.pathname.startsWith("/register")
-    || ["/login", "/onboarding", "/email-verification"].includes(location.pathname);
-  return (
-    <>
-      {!hideNavbar && <AppNavbar />}
-      <Routes>
-        <Route path="/" element={<AppHome />} />
-        <Route path="/events" element={<AppEvents />} />
-        <Route path="/posts" element={<AppPosts />} />
-        <Route path="/artists" element={<ArtistList />} />
-        <Route path="/artist/:id" element={<UserProfile />} />
-        <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-        <Route path="/login" element={<AuthLogin />} />
-        <Route path="/register" element={<AuthRegister />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/email-verification" element={<EmailVerification />} />
-        <Route path="/events/:id" element={<EventDetails />} />
-        <Route path="/register/:type/:id" element={<TicketRegistration />} />
+      const location = useLocation();
+      // const isArtistDashboard = location.pathname.startsWith("/artist/");
+      const hideNavbar = location.pathname.startsWith("/register")
+            || ["/login", "/onboarding", "/email-verification"].includes(location.pathname);
+      return (
+            <>
+                  {!hideNavbar && <AppNavbar />}
+                  <Routes>
+                        <Route path="/" element={<AppHome />} />
+                        <Route path="/events" element={<AppEvents />} />
+                        <Route path="/posts" element={<AppPosts />} />
+                        <Route path="/artists" element={<ArtistList />} />
+                        <Route path="/artist/:id" element={<UserProfile />} />
+                        <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+                        <Route path="/login" element={<AuthLogin />} />
+                        <Route path="/register" element={<AuthRegister />} />
+                        <Route path="/onboarding" element={<Onboarding />} />
+                        <Route path="/email-verification" element={<EmailVerification />} />
+                        <Route path="/events/:id" element={<EventDetails />} />
+                        <Route path="/register/:type/:id" element={<TicketRegistration />} />
 
-        <Route path="/contact-us" element={<ContactUs />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/refund-policies" element={<RefundPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        {/* Artist pages */}
-        {/* <Route path="/artist/home" element={<ProtectedRoute requiresPerformer={true}><ArtistHome /></ProtectedRoute>} /> */}
-        <Route path="/artist/profile" element={<ProtectedRoute requiresPerformer={true}><ArtistProfile /></ProtectedRoute>} />
-        {/* Admin pages */}
-        <Route path="/admin/dashboard" element={<ProtectedRoute requiresAdmin={true}><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/events/:eventId/bookings" element={<ProtectedRoute requiresAdmin={true}><EventBookings /></ProtectedRoute>} />
-        {/* Add more routes for other pages here */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      {!hideNavbar && <AppFooter />}
-    </>
-  );
+                        <Route path="/contact-us" element={<ContactUs />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/refund-policies" element={<RefundPolicy />} />
+                        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                        {/* Artist pages */}
+                        {/* <Route path="/artist/home" element={<ProtectedRoute requiresPerformer={true}><ArtistHome /></ProtectedRoute>} /> */}
+                        <Route path="/artist/profile" element={<ProtectedRoute requiresPerformer={true}><ArtistProfile /></ProtectedRoute>} />
+                        {/* Admin pages */}
+                        <Route path="/admin/dashboard" element={<ProtectedRoute requiresAdmin={true}><AdminDashboard /></ProtectedRoute>} />
+                        <Route path="/admin/events/:eventId/bookings" element={<ProtectedRoute requiresAdmin={true}><EventBookings /></ProtectedRoute>} />
+                        {/* Add more routes for other pages here */}
+                        <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  {!hideNavbar && <AppFooter />}
+            </>
+      );
 }
 
 function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <RequireAuth>
-          <AppRoutes />
-        </RequireAuth>
-      </Router>
-    </AuthProvider>
-  );
+      return (
+            <AuthProvider>
+                  <Router>
+                        <RequireAuth>
+                              <AppRoutes />
+                        </RequireAuth>
+                  </Router>
+            </AuthProvider>
+      );
 }
 
 export default App;

@@ -2,296 +2,296 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaCheck, FaCamera, FaDownload, FaInfoCircle } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { getUserProfile, updateUserProfile } from '../../services/userService';
-import { getUserBookings } from '../../services/bookingService';
+import { getVerifiedUserBookings } from '../../services/bookingService';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const MyProfile = () => {
-  const { isLoggedIn, user: authUser, updateAuthState } = useAuth();
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [form, setForm] = useState(null);
-  const [tickets, setTickets] = useState([]);
-  const [photoHover, setPhotoHover] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showTicketModal, setShowTicketModal] = useState(false);
-  const [currentTicket, setCurrentTicket] = useState(null);
-  const fileInputRef = useRef();
-  const ticketRef = useRef();
+      const { isLoggedIn, user: authUser, updateAuthState } = useAuth();
+      const navigate = useNavigate();
+      const [user, setUser] = useState(null);
+      const [form, setForm] = useState(null);
+      const [tickets, setTickets] = useState([]);
+      const [photoHover, setPhotoHover] = useState(false);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [showTicketModal, setShowTicketModal] = useState(false);
+      const [currentTicket, setCurrentTicket] = useState(null);
+      const fileInputRef = useRef();
+      const ticketRef = useRef();
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
+      useEffect(() => {
+            if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+            }
 
-    const fetchData = async () => {
-      try {
-        const [userData, bookingsData] = await Promise.all([
-          getUserProfile(),
-          getUserBookings()
-        ]);
-        setUser(userData);
-        setForm(userData);
-        setTickets(bookingsData.bookings || []);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch user data');
-        setLoading(false);
+            const fetchData = async () => {
+                  try {
+                        const [userData, bookingsData] = await Promise.all([
+                              getUserProfile(),
+                              getVerifiedUserBookings()
+                        ]);
+                        setUser(userData);
+                        setForm(userData);
+                        setTickets(bookingsData.bookings || []);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || 'Failed to fetch user data');
+                        setLoading(false);
+                  }
+            };
+            fetchData();
+      }, [isLoggedIn, navigate]);
+
+      const handleChange = (e) => {
+            setForm({ ...form, [e.target.name]: e.target.value });
+      };
+
+      const handleSave = async (e) => {
+            e.preventDefault();
+            try {
+                  const updatedUser = await updateUserProfile(form);
+                  setUser(updatedUser);
+                  alert('Profile updated successfully!');
+            } catch (err) {
+                  alert(err.message || 'Failed to update profile');
+            }
+      };
+
+      const handlePhotoChange = (e) => {
+            if (e.target.files && e.target.files[0]) {
+                  const file = e.target.files[0];
+                  const url = URL.createObjectURL(file);
+                  setForm({ ...form, photo: url });
+                  // TODO: Implement photo upload to server
+            }
+      };
+
+      const handleDownload = (ticket) => {
+            setCurrentTicket(ticket);
+            setShowTicketModal(true);
+      };
+
+      const closeTicketModal = () => {
+            setShowTicketModal(false);
+      };
+
+      const downloadTicketPDF = () => {
+            if (ticketRef.current) {
+                  html2canvas(ticketRef.current, {
+                        scale: 2,
+                        logging: false,
+                        useCORS: true,
+                        allowTaint: true
+                  }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const pdf = new jsPDF({
+                              orientation: 'portrait',
+                              unit: 'mm',
+                              format: 'a4'
+                        });
+
+                        const imgWidth = 210;
+                        const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                        pdf.save(`${currentTicket.event.name}-Ticket.pdf`);
+                  });
+            }
+      };
+
+      if (loading) {
+            return <div className="text-center py-20">Loading profile...</div>;
       }
-    };
-    fetchData();
-  }, [isLoggedIn, navigate]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+      if (error) {
+            return <div className="text-center py-20 text-red-600">{error}</div>;
+      }
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    try {
-      const updatedUser = await updateUserProfile(form);
-      setUser(updatedUser);
-      alert('Profile updated successfully!');
-    } catch (err) {
-      alert(err.message || 'Failed to update profile');
-    }
-  };
+      return (
+            <section className="myprofile-section">
+                  {/* Header */}
+                  <div className="myprofile-header mb-10 px-4 md:px-0 max-w-5xl mx-auto">
+                        <h2 className="myprofile-title">My Profile</h2>
+                        <div className="myprofile-title-underline myprofile-title-underline-animated"></div>
+                        <div className="myprofile-subheading">Welcome back, {form.name.split(' ')[0]}! Manage your details and see your event history below.</div>
+                  </div>
+                  <div className="max-w-5xl mx-auto px-4 md:px-0">
+                        {/* Profile Card */}
+                        <form className="myprofile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 mb-14" onSubmit={handleSave}>
+                              <div className="myprofile-accent-bar"></div>
+                              {/* Photo Section - Left Side */}
+                              <div
+                                    className="myprofile-photo-section w-full md:w-1/3 flex flex-col items-center justify-center p-0 md:p-0 relative overflow-hidden"
+                                    onMouseEnter={() => setPhotoHover(true)}
+                                    onMouseLeave={() => setPhotoHover(false)}
+                              >
+                                    <div className="myprofile-photo-rect-wrap w-full h-full relative">
+                                          <img src={form.photo} alt={form.name} className="myprofile-photo-rect" />
+                                          <input
+                                                type="file"
+                                                accept="image/*"
+                                                ref={fileInputRef}
+                                                style={{ display: 'none' }}
+                                                onChange={handlePhotoChange}
+                                          />
+                                          <div
+                                                className={`myprofile-photo-edit-overlay-rect${photoHover ? ' show' : ''}`}
+                                                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                                          >
+                                                <span className="myprofile-photo-edit-btn flex items-center gap-2">
+                                                      <FaCamera className="inline-block text-lg" /> Edit
+                                                </span>
+                                          </div>
+                                    </div>
+                              </div>
+                              {/* Details Section - Right Side */}
+                              <div className="myprofile-details-section w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                          <div>
+                                                <label className="myprofile-label">Name</label>
+                                                <input name="name" value={form.name} onChange={handleChange} className="input-edit" />
+                                          </div>
+                                          <div>
+                                                <label className="myprofile-label">Email</label>
+                                                <input name="email" value={form.email} onChange={handleChange} className="input-edit" />
+                                          </div>
+                                          <div>
+                                                <label className="myprofile-label">Phone</label>
+                                                <input name="phone" value={form.phone} onChange={handleChange} className="input-edit" />
+                                          </div>
+                                    </div>
+                                    <div className="flex gap-3 mt-8">
+                                          <button type="submit" className="btn-save-profile flex items-center justify-center gap-2 px-10 py-3 text-lg">
+                                                <FaCheck className="inline-block text-xl mb-0.5" /> Save Changes
+                                          </button>
+                                    </div>
+                              </div>
+                        </form>
 
-  const handlePhotoChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setForm({ ...form, photo: url });
-      // TODO: Implement photo upload to server
-    }
-  };
+                        {/* Ticket History */}
+                        <div className="ticket-history-section mt-16">
+                              <div className="ticket-history-header mb-8">
+                                    <h4 className="ticket-history-title">Ticket Purchase History</h4>
+                                    <div className="ticket-history-title-underline ticket-history-title-underline-animated"></div>
+                                    <div className="ticket-history-subheading">All your event tickets, with download options.</div>
+                              </div>
+                              <div className="ticket-history-list grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {tickets.map((ticket) => (
+                                          <div key={ticket._id} className="ticket-card group flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-white via-indigo-50 to-indigo-100 border border-[#e0e7ff] rounded-2xl shadow p-6 hover:shadow-lg transition-all">
+                                                <img src={ticket.event.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
+                                                      alt={ticket.event.name}
+                                                      className="ticket-event-cover w-32 h-24 object-cover rounded-xl border border-indigo-100 shadow" />
+                                                <div className="flex-1 w-full">
+                                                      <div className="ticket-event-name text-lg font-bold text-indigo-800 mb-1">{ticket.event.name}</div>
+                                                      <div className="ticket-event-info text-gray-700 mb-1">
+                                                            <span className="font-medium">Date:</span> {format(new Date(ticket.event.dateTime), 'dd MMM yyyy')} &nbsp;|&nbsp;
+                                                            <span className="font-medium">Time:</span> {format(new Date(ticket.event.dateTime), 'h:mm a')}
+                                                      </div>
+                                                      <div className="ticket-event-info text-gray-700 mb-1">
+                                                            <span className="font-medium">Venue:</span> {ticket.event.venue}
+                                                      </div>
+                                                      <div className="ticket-event-info text-gray-700 mb-1">
+                                                            <span className="font-medium">Type: </span> {ticket.isPerformer ? 'Performer' : 'Audience'}
+                                                      </div>
+                                                      <div className="ticket-event-info text-gray-700 mb-1">
+                                                            <span className="font-medium">Seats:</span> {ticket.numberOfSeats} &nbsp;|&nbsp;Attendees: {ticket.isPerformer ? ticket.username : ticket.membersName?.join(', ')}
+                                                      </div>
+                                                      <div className="ticket-event-info text-gray-500 text-sm mb-2">
+                                                            <span className="font-medium">Ticket ID:</span> {ticket.ticketId} &nbsp;|&nbsp;
+                                                            <br />
+                                                            <span className="font-medium">Purchased:</span> {format(new Date(ticket.createdAt), 'dd MMM yyyy')}
+                                                      </div>
+                                                      <button className="btn-secondary px-6 py-2 mt-2" onClick={() => handleDownload(ticket)}>Download Ticket</button>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
+                  </div>
 
-  const handleDownload = (ticket) => {
-    setCurrentTicket(ticket);
-    setShowTicketModal(true);
-  };
-  
-  const closeTicketModal = () => {
-    setShowTicketModal(false);
-  };
-  
-  const downloadTicketPDF = () => {
-    if (ticketRef.current) {
-      html2canvas(ticketRef.current, {
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-        
-        const imgWidth = 210;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(`${currentTicket.event.name}-Ticket.pdf`);
-      });
-    }
-  };
-
-  if (loading) {
-    return <div className="text-center py-20">Loading profile...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-20 text-red-600">{error}</div>;
-  }
-
-  return (
-    <section className="myprofile-section">
-      {/* Header */}
-      <div className="myprofile-header mb-10 px-4 md:px-0 max-w-5xl mx-auto">
-        <h2 className="myprofile-title">My Profile</h2>
-        <div className="myprofile-title-underline myprofile-title-underline-animated"></div>
-        <div className="myprofile-subheading">Welcome back, {form.name.split(' ')[0]}! Manage your details and see your event history below.</div>
-      </div>
-      <div className="max-w-5xl mx-auto px-4 md:px-0">
-        {/* Profile Card */}
-        <form className="myprofile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 mb-14" onSubmit={handleSave}>
-          <div className="myprofile-accent-bar"></div>
-          {/* Photo Section - Left Side */}
-          <div
-            className="myprofile-photo-section w-full md:w-1/3 flex flex-col items-center justify-center p-0 md:p-0 relative overflow-hidden"
-            onMouseEnter={() => setPhotoHover(true)}
-            onMouseLeave={() => setPhotoHover(false)}
-          >
-            <div className="myprofile-photo-rect-wrap w-full h-full relative">
-              <img src={form.photo} alt={form.name} className="myprofile-photo-rect" />
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handlePhotoChange}
-              />
-              <div
-                className={`myprofile-photo-edit-overlay-rect${photoHover ? ' show' : ''}`}
-                onClick={() => fileInputRef.current && fileInputRef.current.click()}
-              >
-                <span className="myprofile-photo-edit-btn flex items-center gap-2">
-                  <FaCamera className="inline-block text-lg" /> Edit
-                </span>
-              </div>
-            </div>
-          </div>
-          {/* Details Section - Right Side */}
-          <div className="myprofile-details-section w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <label className="myprofile-label">Name</label>
-                <input name="name" value={form.name} onChange={handleChange} className="input-edit" />
-              </div>
-              <div>
-                <label className="myprofile-label">Email</label>
-                <input name="email" value={form.email} onChange={handleChange} className="input-edit" />
-              </div>
-              <div>
-                <label className="myprofile-label">Phone</label>
-                <input name="phone" value={form.phone} onChange={handleChange} className="input-edit" />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-8">
-              <button type="submit" className="btn-save-profile flex items-center justify-center gap-2 px-10 py-3 text-lg">
-                <FaCheck className="inline-block text-xl mb-0.5" /> Save Changes
-              </button>
-            </div>
-          </div>
-        </form>
-
-        {/* Ticket History */}
-        <div className="ticket-history-section mt-16">
-          <div className="ticket-history-header mb-8">
-            <h4 className="ticket-history-title">Ticket Purchase History</h4>
-            <div className="ticket-history-title-underline ticket-history-title-underline-animated"></div>
-            <div className="ticket-history-subheading">All your event tickets, with download options.</div>
-          </div>
-          <div className="ticket-history-list grid grid-cols-1 md:grid-cols-2 gap-8">
-            {tickets.map((ticket) => (
-              <div key={ticket._id} className="ticket-card group flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-white via-indigo-50 to-indigo-100 border border-[#e0e7ff] rounded-2xl shadow p-6 hover:shadow-lg transition-all">
-                <img src={ticket.event.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
-                     alt={ticket.event.name}
-                     className="ticket-event-cover w-32 h-24 object-cover rounded-xl border border-indigo-100 shadow" />
-                <div className="flex-1 w-full">
-                  <div className="ticket-event-name text-lg font-bold text-indigo-800 mb-1">{ticket.event.name}</div>
-                  <div className="ticket-event-info text-gray-700 mb-1">
-                    <span className="font-medium">Date:</span> {format(new Date(ticket.event.dateTime), 'dd MMM yyyy')} &nbsp;|&nbsp;
-                    <span className="font-medium">Time:</span> {format(new Date(ticket.event.dateTime), 'h:mm a')}
-                  </div>
-                  <div className="ticket-event-info text-gray-700 mb-1">
-                    <span className="font-medium">Venue:</span> {ticket.event.venue}
-                  </div>
-                  <div className="ticket-event-info text-gray-700 mb-1">
-                    <span className="font-medium">Type: </span> {ticket.isPerformer ? 'Performer' : 'Audience'}
-                  </div>
-                  <div className="ticket-event-info text-gray-700 mb-1">
-                    <span className="font-medium">Seats:</span> {ticket.numberOfSeats} &nbsp;|&nbsp;Attendees: {ticket.isPerformer ? ticket.username : ticket.membersName?.join(', ')}
-                  </div>
-                  <div className="ticket-event-info text-gray-500 text-sm mb-2">
-                    <span className="font-medium">Ticket ID:</span> {ticket.ticketId} &nbsp;|&nbsp;
-                    <br />
-                    <span className="font-medium">Purchased:</span> {format(new Date(ticket.createdAt), 'dd MMM yyyy')}
-                  </div>
-                  <button className="btn-secondary px-6 py-2 mt-2" onClick={() => handleDownload(ticket)}>Download Ticket</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Ticket Modal */}
-      {showTicketModal && currentTicket && (
-        <div className="modal-overlay">
-          <div className="modal-content ticket-modal">
-            <div className="modal-header">
-              <h2>Your Ticket</h2>
-              <button className="close-btn" onClick={closeTicketModal}>&times;</button>
-            </div>
-            <div className="modal-body p-6">
-              <div className="ticket-container" ref={ticketRef}>
-                <div className="ticket-header">
-                  <div className="ticket-logo">Voice of Rajkot</div>
-                  <div className="ticket-type">{currentTicket.isPerformer ? 'Performer' : 'Audience'}</div>
-                </div>
-                <div className="ticket-event-details">
-                  <h3>{currentTicket.event.name}</h3>
-                  <div className="ticket-info-row">
-                    <div className="ticket-info-item">
-                      <div className="info-label">Date</div>
-                      <div className="info-value">{format(new Date(currentTicket.event.dateTime), 'dd MMM yyyy')}</div>
-                    </div>
-                    <div className="ticket-info-item">
-                      <div className="info-label">Time</div>
-                      <div className="info-value">{format(new Date(currentTicket.event.dateTime), 'h:mm a')}</div>
-                    </div>
-                    <div className="ticket-info-item">
-                      <div className="info-label">Venue</div>
-                      <div className="info-value">{currentTicket.event.venue}</div>
-                    </div>
-                  </div>
-                  <div className="ticket-info-row">
-                    <div className="ticket-info-item">
-                      <div className="info-label">Booking ID</div>
-                      <div className="info-value">{currentTicket.ticketId}</div>
-                    </div>
-                    <div className="ticket-info-item">
-                      <div className="info-label">Seats</div>
-                      <div className="info-value">{currentTicket.numberOfSeats}</div>
-                    </div>
-                    <div className="ticket-info-item">
-                      <div className="info-label">Amount Paid</div>
-                      <div className="info-value">₹{currentTicket.isPerformer ? currentTicket.totalAmount : (currentTicket.numberOfSeats * currentTicket.event.price)}</div>
-                    </div>
-                  </div>
-                  <div className="ticket-attendees">
-                    <div className="info-label">Attendees</div>
-                    <div className="info-value">{currentTicket.isPerformer ? currentTicket.username : currentTicket.membersName?.join(', ')} 
-                      {/* <span className="text-sm text-gray-500">{currentTicket.isPerformer ? ' (Performer)' : ''}</span> */}
-                    </div>
-                  </div>
-                  <div className="ticket-info-row">
-                    <div className="ticket-info-item">
-                      <div className="info-label">Booking Date</div>
-                      <div className="info-value">{format(new Date(currentTicket.createdAt), 'dd MMM yyyy')}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="ticket-footer">
-                  <div className="ticket-instructions">
-                    <div className="instruction-title">
-                      <FaInfoCircle className="inline-block mr-2" />
-                      Important Information
-                    </div>
-                    <div className="instruction-text">
-                      Please bring this ticket and payment screenshot to the event entrance for verification.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-center mt-6">
-                <button className="download-btn" onClick={downloadTicketPDF}>
-                  <FaDownload className="inline-block mr-2" /> Download PDF Ticket
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <style jsx>{`
+                  {/* Ticket Modal */}
+                  {showTicketModal && currentTicket && (
+                        <div className="modal-overlay">
+                              <div className="modal-content ticket-modal">
+                                    <div className="modal-header">
+                                          <h2>Your Ticket</h2>
+                                          <button className="close-btn" onClick={closeTicketModal}>&times;</button>
+                                    </div>
+                                    <div className="modal-body p-6">
+                                          <div className="ticket-container" ref={ticketRef}>
+                                                <div className="ticket-header">
+                                                      <div className="ticket-logo">Voice of Rajkot</div>
+                                                      <div className="ticket-type">{currentTicket.isPerformer ? 'Performer' : 'Audience'}</div>
+                                                </div>
+                                                <div className="ticket-event-details">
+                                                      <h3>{currentTicket.event.name}</h3>
+                                                      <div className="ticket-info-row">
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Date</div>
+                                                                  <div className="info-value">{format(new Date(currentTicket.event.dateTime), 'dd MMM yyyy')}</div>
+                                                            </div>
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Time</div>
+                                                                  <div className="info-value">{format(new Date(currentTicket.event.dateTime), 'h:mm a')}</div>
+                                                            </div>
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Venue</div>
+                                                                  <div className="info-value">{currentTicket.event.venue}</div>
+                                                            </div>
+                                                      </div>
+                                                      <div className="ticket-info-row">
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Booking ID</div>
+                                                                  <div className="info-value">{currentTicket.ticketId}</div>
+                                                            </div>
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Seats</div>
+                                                                  <div className="info-value">{currentTicket.numberOfSeats}</div>
+                                                            </div>
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Amount Paid</div>
+                                                                  <div className="info-value">₹{currentTicket.isPerformer ? currentTicket.totalAmount : (currentTicket.numberOfSeats * currentTicket.event.price)}</div>
+                                                            </div>
+                                                      </div>
+                                                      <div className="ticket-attendees">
+                                                            <div className="info-label">Attendees</div>
+                                                            <div className="info-value">{currentTicket.isPerformer ? currentTicket.username : currentTicket.membersName?.join(', ')}
+                                                                  {/* <span className="text-sm text-gray-500">{currentTicket.isPerformer ? ' (Performer)' : ''}</span> */}
+                                                            </div>
+                                                      </div>
+                                                      <div className="ticket-info-row">
+                                                            <div className="ticket-info-item">
+                                                                  <div className="info-label">Booking Date</div>
+                                                                  <div className="info-value">{format(new Date(currentTicket.createdAt), 'dd MMM yyyy')}</div>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                                <div className="ticket-footer">
+                                                      <div className="ticket-instructions">
+                                                            <div className="instruction-title">
+                                                                  <FaInfoCircle className="inline-block mr-2" />
+                                                                  Important Information
+                                                            </div>
+                                                            <div className="instruction-text">
+                                                                  Please bring this ticket and payment screenshot to the event entrance for verification.
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                          <div className="flex justify-center mt-6">
+                                                <button className="download-btn" onClick={downloadTicketPDF}>
+                                                      <FaDownload className="inline-block mr-2" /> Download PDF Ticket
+                                                </button>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+                  )}
+                  <style jsx>{`
         .myprofile-section {
           background: #f8fafc;
           padding-top: 4.5rem;
@@ -734,8 +734,8 @@ const MyProfile = () => {
           box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
       `}</style>
-    </section>
-  );
+            </section>
+      );
 };
 
 export default MyProfile;

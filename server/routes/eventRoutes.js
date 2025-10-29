@@ -1,13 +1,13 @@
 import express from 'express';
 import { protect } from '../middleware/authMiddleware.js';
 import {
-    createEvent,
-    getEvents,
-    getEventById,
-    updateEvent,
-    deleteEvent,
-    getEventsByPerformer,
-    addPerformerToEvent
+      createEvent,
+      getEvents,
+      getEventById,
+      updateEvent,
+      deleteEvent,
+      getEventsByPerformer,
+      addPerformerToEvent
 } from '../controllers/eventController.js';
 
 const router = express.Router();

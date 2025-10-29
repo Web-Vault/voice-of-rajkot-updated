@@ -2,52 +2,52 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const AppFooter = () => (
-  <>
-  <footer className="footer-simple-wrapper">
-    <div className="footer-simple-main">
-      {/* Brand */}
-      <div className="footer-simple-brand">
-        <span className="footer-simple-logo">V</span>
-        <span className="footer-simple-title">Voice of Rajkot</span>
-      </div>
-      {/* Links */}
-      <nav className="footer-simple-links">
-        <Link to="/events" className="footer-simple-link">
-          Events
-        </Link>
-        <Link to="/refund-policies" className="footer-simple-link">
-          Refund Policies
-        </Link>
-        <Link to="/others" className="footer-simple-link">
-          Others
-        </Link>
-      </nav>
-      {/* Contact/Social */}
-      <div className="footer-simple-contact">
-        <a href="mailto:info@rhythmofheart.com" className="footer-simple-link">
-          info@voiceofrajkot.com
-        </a>
-        <div className="footer-simple-socials">
-          <a href="#" aria-label="Instagram" className="footer-simple-social">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <rect x="2" y="2" width="20" height="20" rx="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
-            </svg>
-          </a>
-          <a href="#" aria-label="Twitter" className="footer-simple-social">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.4 1s-4.18 1.64-6.29 2.18A4.48 4.48 0 0 0 3 7.72v.56A12.94 12.94 0 0 1 1.64 4s-4 9 5 13a13.07 13.07 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div className="footer-simple-sub">© 2025 voice of rajkot. All rights reserved.</div>
-  </footer>
+      <>
+            <footer className="footer-simple-wrapper">
+                  <div className="footer-simple-main">
+                        {/* Brand */}
+                        <div className="footer-simple-brand">
+                              <span className="footer-simple-logo">V</span>
+                              <span className="footer-simple-title">Voice of Rajkot</span>
+                        </div>
+                        {/* Links */}
+                        <nav className="footer-simple-links">
+                              <Link to="/events" className="footer-simple-link">
+                                    Events
+                              </Link>
+                              <Link to="/refund-policies" className="footer-simple-link">
+                                    Refund Policies
+                              </Link>
+                              <Link to="/others" className="footer-simple-link">
+                                    Others
+                              </Link>
+                        </nav>
+                        {/* Contact/Social */}
+                        <div className="footer-simple-contact">
+                              <a href="mailto:info@rhythmofheart.com" className="footer-simple-link">
+                                    info@voiceofrajkot.com
+                              </a>
+                              <div className="footer-simple-socials">
+                                    <a href="#" aria-label="Instagram" className="footer-simple-social">
+                                          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                <rect x="2" y="2" width="20" height="20" rx="5" />
+                                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                                <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
+                                          </svg>
+                                    </a>
+                                    <a href="#" aria-label="Twitter" className="footer-simple-social">
+                                          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.4 1s-4.18 1.64-6.29 2.18A4.48 4.48 0 0 0 3 7.72v.56A12.94 12.94 0 0 1 1.64 4s-4 9 5 13a13.07 13.07 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                                          </svg>
+                                    </a>
+                              </div>
+                        </div>
+                  </div>
+                  <div className="footer-simple-sub">© 2025 voice of rajkot. All rights reserved.</div>
+            </footer>
 
-<style>
-  {`
+            <style>
+                  {`
 .footer-simple-wrapper {
   z-index: -1;
   background: #f9fafb;
@@ -195,8 +195,8 @@ const AppFooter = () => (
     height: 2.1rem;
   }
 }`}
-</style>
-  </>
+            </style>
+      </>
 
 );
 

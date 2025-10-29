@@ -3,87 +3,87 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const AppNavbar = () => {
-  const navigate = useNavigate();
-  const { isLoggedIn, user, logout } = useAuth();
-  const userName = user ? user.name : "";
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+      const navigate = useNavigate();
+      const { isLoggedIn, user, logout } = useAuth();
+      const userName = user ? user.name : "";
+      const [menuOpen, setMenuOpen] = useState(false);
+      const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen((open) => !open);
-    if (menuOpen) setDropdownOpen(false);
-  };
+      const toggleMenu = () => {
+            setMenuOpen((open) => !open);
+            if (menuOpen) setDropdownOpen(false);
+      };
 
-  const closeMenu = () => {
-    setMenuOpen(false);
-    setDropdownOpen(false);
-  };
+      const closeMenu = () => {
+            setMenuOpen(false);
+            setDropdownOpen(false);
+      };
 
-  const toggleDropdown = () => setDropdownOpen((open) => !open);
+      const toggleDropdown = () => setDropdownOpen((open) => !open);
 
-  return (
-    <>
-      <nav className="navbar-pro sticky top-0 z-50">
-        <div className="navbar-container">
-          {/* Brand */}
-          <div className="navbar-brand flex items-center gap-3">
-            <Link
-              to="/"
-              className="flex items-center gap-2 no-underline"
-              style={{ textDecoration: "none" }}
-            >
-              <span
-                className="navbar-logo flex items-center justify-center text-white font-extrabold text-2xl rounded-full bg-indigo-600 shadow-md"
-                style={{ width: "2.5rem", height: "2.5rem" }}
-              >
-                V
-              </span>
-              <span className="navbar-title font-semibold text-lg tracking-wide text-indigo-800">
-                Voice of Rajkot
-              </span>
-            </Link>
-          </div>
-          <nav className="navbar-links-desktop flex items-center gap-6 ml-8">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
-                (isActive ? " navbar-link-active" : "")
-              }
-              end
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/events"
-              className={({ isActive }) =>
-                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
-                (isActive ? " navbar-link-active" : "")
-              }
-            >
-              Events
-            </NavLink>
-            <NavLink
-              to="/artists"
-              className={({ isActive }) =>
-                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
-                (isActive ? " navbar-link-active" : "")
-              }
-            >
-              Artists
-            </NavLink>
-            <NavLink
-              to="/posts"
-              className={({ isActive }) =>
-                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
-                (isActive ? " navbar-link-active" : "")
-              }
-            >
-              Posts
-            </NavLink>
-          </nav>
-          <div className="navbar-actions">
-            {/* {isLoggedIn && (
+      return (
+            <>
+                  <nav className="navbar-pro sticky top-0 z-50">
+                        <div className="navbar-container">
+                              {/* Brand */}
+                              <div className="navbar-brand flex items-center gap-3">
+                                    <Link
+                                          to="/"
+                                          className="flex items-center gap-2 no-underline"
+                                          style={{ textDecoration: "none" }}
+                                    >
+                                          <span
+                                                className="navbar-logo flex items-center justify-center text-white font-extrabold text-2xl rounded-full bg-indigo-600 shadow-md"
+                                                style={{ width: "2.5rem", height: "2.5rem" }}
+                                          >
+                                                V
+                                          </span>
+                                          <span className="navbar-title font-semibold text-lg tracking-wide text-indigo-800">
+                                                Voice of Rajkot
+                                          </span>
+                                    </Link>
+                              </div>
+                              <nav className="navbar-links-desktop flex items-center gap-6 ml-8">
+                                    <NavLink
+                                          to="/"
+                                          className={({ isActive }) =>
+                                                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
+                                                (isActive ? " navbar-link-active" : "")
+                                          }
+                                          end
+                                    >
+                                          Home
+                                    </NavLink>
+                                    <NavLink
+                                          to="/events"
+                                          className={({ isActive }) =>
+                                                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
+                                                (isActive ? " navbar-link-active" : "")
+                                          }
+                                    >
+                                          Events
+                                    </NavLink>
+                                    <NavLink
+                                          to="/artists"
+                                          className={({ isActive }) =>
+                                                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
+                                                (isActive ? " navbar-link-active" : "")
+                                          }
+                                    >
+                                          Artists
+                                    </NavLink>
+                                    <NavLink
+                                          to="/posts"
+                                          className={({ isActive }) =>
+                                                "navbar-link font-medium text-gray-700 hover:text-indigo-700 transition" +
+                                                (isActive ? " navbar-link-active" : "")
+                                          }
+                                    >
+                                          Posts
+                                    </NavLink>
+                              </nav>
+                              <div className="navbar-actions">
+                                    {/* {isLoggedIn && (
               <NavLink
                 to={user && user.isPerformer ? "/artist/profile" : "/my-profile"}
                 className={({ isActive }) =>
@@ -94,179 +94,179 @@ const AppNavbar = () => {
                 Profile
               </NavLink>
             )} */}
-            {isLoggedIn ? (
-              <div className="relative group">
-                <button className="navbar-user-btn" onClick={toggleDropdown}>
-                  <span className="navbar-avatar">{userName.charAt(0)}</span>
-                  <svg
-                    className="w-4 h-4 ml-1"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-                {dropdownOpen && (
-                  <div className="user-dropdown">
-                    <Link
-                      to={user && user.isAdmin ? "/admin/dashboard" : user.isPerformer ? "/artist/profile" : "/my-profile"}
-                      className="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <button
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-rose-100"
-                      onClick={() => {
-                        logout();
-                        setDropdownOpen(false);
-                        navigate('/');
-                      }}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <NavLink
-                  to="/login"
-                  className={({ isActive }) =>
-                    "navbar-link hide-on-mobile" +
-                    (isActive ? " navbar-link-active" : "")
-                  }
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  className={({ isActive }) =>
-                    "navbar-link hide-on-mobile" +
-                    (isActive ? " navbar-link-active" : "")
-                  }
-                >
-                  Register
-                </NavLink>
-              </>
-            )}
-            {/* Hamburger (Mobile) */}
-            <button
-              className="navbar-hamburger"
-              onClick={toggleMenu}
-              aria-label="Toggle menu"
-            >
-              <span className={menuOpen ? "open" : ""}></span>
-              <span className={menuOpen ? "open" : ""}></span>
-              <span className={menuOpen ? "open" : ""}></span>
-            </button>
-          </div>
-        </div>
-        {/* Off-canvas Mobile Menu */}
-        {menuOpen && (
-          <div className="navbar-mobile-overlay" onClick={closeMenu}>
-            <div
-              className="navbar-mobile-menu"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="navbar-mobile-header">
-                <span className="navbar-logo">R</span>
-                <span className="navbar-title">rhythm of heart</span>
-                <button
-                  className="navbar-mobile-close"
-                  onClick={closeMenu}
-                  aria-label="Close menu"
-                >
-                  &times;
-                </button>
-              </div>
-              <div className="navbar-mobile-links">
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    "navbar-link" + (isActive ? " navbar-link-active" : "")
-                  }
-                  end
-                  onClick={closeMenu}
-                >
-                  Home
-                </NavLink>
-                <NavLink
-                  to="/events"
-                  className={({ isActive }) =>
-                    "navbar-link" + (isActive ? " navbar-link-active" : "")
-                  }
-                  onClick={closeMenu}
-                >
-                  Events
-                </NavLink>
-                <NavLink
-                  to="/artists"
-                  className={({ isActive }) =>
-                    "navbar-link" + (isActive ? " navbar-link-active" : "")
-                  }
-                  onClick={closeMenu}
-                >
-                  Artists
-                </NavLink>
-                <NavLink
-                  to="/posts"
-                  className={({ isActive }) =>
-                    "navbar-link" + (isActive ? " navbar-link-active" : "")
-                  }
-                  onClick={closeMenu}
-                >
-                  Posts
-                </NavLink>
-              </div>
-              <div className="navbar-mobile-user mt-6">
-                {isLoggedIn ? (
-                  <>
-                    <button
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-rose-100"
-                      onClick={() => {
-                        logout();
-                        closeMenu();
-                        navigate('/');
-                      }}
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <NavLink
-                      to="/login"
-                      className={({ isActive }) =>
-                        "navbar-link" + (isActive ? " navbar-link-active" : "")
-                      }
-                      onClick={closeMenu}
-                    >
-                      Login
-                    </NavLink>
-                    <NavLink
-                      to="/register"
-                      className={({ isActive }) =>
-                        "navbar-link" + (isActive ? " navbar-link-active" : "")
-                      }
-                      onClick={closeMenu}
-                    >
-                      Register
-                    </NavLink>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-      <style>{`
+                                    {isLoggedIn ? (
+                                          <div className="relative group">
+                                                <button className="navbar-user-btn" onClick={toggleDropdown}>
+                                                      <span className="navbar-avatar">{userName.charAt(0)}</span>
+                                                      <svg
+                                                            className="w-4 h-4 ml-1"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            viewBox="0 0 24 24"
+                                                      >
+                                                            <path
+                                                                  strokeLinecap="round"
+                                                                  strokeLinejoin="round"
+                                                                  d="M19 9l-7 7-7-7"
+                                                            />
+                                                      </svg>
+                                                </button>
+                                                {dropdownOpen && (
+                                                      <div className="user-dropdown">
+                                                            <Link
+                                                                  to={user && user.isAdmin ? "/admin/dashboard" : user.isPerformer ? "/artist/profile" : "/my-profile"}
+                                                                  className="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
+                                                                  onClick={() => setDropdownOpen(false)}
+                                                            >
+                                                                  Profile
+                                                            </Link>
+                                                            <button
+                                                                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-rose-100"
+                                                                  onClick={() => {
+                                                                        logout();
+                                                                        setDropdownOpen(false);
+                                                                        navigate('/');
+                                                                  }}
+                                                            >
+                                                                  Logout
+                                                            </button>
+                                                      </div>
+                                                )}
+                                          </div>
+                                    ) : (
+                                          <>
+                                                <NavLink
+                                                      to="/login"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link hide-on-mobile" +
+                                                            (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                >
+                                                      Login
+                                                </NavLink>
+                                                <NavLink
+                                                      to="/register"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link hide-on-mobile" +
+                                                            (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                >
+                                                      Register
+                                                </NavLink>
+                                          </>
+                                    )}
+                                    {/* Hamburger (Mobile) */}
+                                    <button
+                                          className="navbar-hamburger"
+                                          onClick={toggleMenu}
+                                          aria-label="Toggle menu"
+                                    >
+                                          <span className={menuOpen ? "open" : ""}></span>
+                                          <span className={menuOpen ? "open" : ""}></span>
+                                          <span className={menuOpen ? "open" : ""}></span>
+                                    </button>
+                              </div>
+                        </div>
+                        {/* Off-canvas Mobile Menu */}
+                        {menuOpen && (
+                              <div className="navbar-mobile-overlay" onClick={closeMenu}>
+                                    <div
+                                          className="navbar-mobile-menu"
+                                          onClick={(e) => e.stopPropagation()}
+                                    >
+                                          <div className="navbar-mobile-header">
+                                                <span className="navbar-logo">R</span>
+                                                <span className="navbar-title">rhythm of heart</span>
+                                                <button
+                                                      className="navbar-mobile-close"
+                                                      onClick={closeMenu}
+                                                      aria-label="Close menu"
+                                                >
+                                                      &times;
+                                                </button>
+                                          </div>
+                                          <div className="navbar-mobile-links">
+                                                <NavLink
+                                                      to="/"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                      end
+                                                      onClick={closeMenu}
+                                                >
+                                                      Home
+                                                </NavLink>
+                                                <NavLink
+                                                      to="/events"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                      onClick={closeMenu}
+                                                >
+                                                      Events
+                                                </NavLink>
+                                                <NavLink
+                                                      to="/artists"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                      onClick={closeMenu}
+                                                >
+                                                      Artists
+                                                </NavLink>
+                                                <NavLink
+                                                      to="/posts"
+                                                      className={({ isActive }) =>
+                                                            "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                      }
+                                                      onClick={closeMenu}
+                                                >
+                                                      Posts
+                                                </NavLink>
+                                          </div>
+                                          <div className="navbar-mobile-user mt-6">
+                                                {isLoggedIn ? (
+                                                      <>
+                                                            <button
+                                                                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-rose-100"
+                                                                  onClick={() => {
+                                                                        logout();
+                                                                        closeMenu();
+                                                                        navigate('/');
+                                                                  }}
+                                                            >
+                                                                  Logout
+                                                            </button>
+                                                      </>
+                                                ) : (
+                                                      <>
+                                                            <NavLink
+                                                                  to="/login"
+                                                                  className={({ isActive }) =>
+                                                                        "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                                  }
+                                                                  onClick={closeMenu}
+                                                            >
+                                                                  Login
+                                                            </NavLink>
+                                                            <NavLink
+                                                                  to="/register"
+                                                                  className={({ isActive }) =>
+                                                                        "navbar-link" + (isActive ? " navbar-link-active" : "")
+                                                                  }
+                                                                  onClick={closeMenu}
+                                                            >
+                                                                  Register
+                                                            </NavLink>
+                                                      </>
+                                                )}
+                                          </div>
+                                    </div>
+                              </div>
+                        )}
+                  </nav>
+                  <style>{`
 .navbar-pro {
   background: rgba(255,255,255,0.96);
   backdrop-filter: blur(8px);
@@ -523,8 +523,8 @@ const AppNavbar = () => {
 .hide-on-mobile {
   display: inline-block;
 }`}</style>
-    </>
-  );
+            </>
+      );
 };
 
 export default AppNavbar;

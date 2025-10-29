@@ -2,184 +2,184 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const letterPool = [
-  { char: 'અ' }, // Gujarati
-  { char: 'क' }, // Hindi
-  { char: 'A' }, // English
-  { char: 'ش' }, // Urdu/Arabic
-  { char: '诗' }, // Chinese (poetry)
-  { char: 'ક' }, // Gujarati
-  { char: 'B' }, // English
-  { char: 'ગ' }, // Gujarati
-  { char: 'م' }, // Urdu/Arabic
-  { char: '字' }, // Chinese
-  { char: 'R' }, // English
-  { char: 'પ' }, // Gujarati
-  { char: 'न' }, // Hindi
-  { char: 'C' }, // English
-  { char: 'ક' }, // Hindi
-  { char: 'દ' }, // Gujarati
+      { char: 'અ' }, // Gujarati
+      { char: 'क' }, // Hindi
+      { char: 'A' }, // English
+      { char: 'ش' }, // Urdu/Arabic
+      { char: '诗' }, // Chinese (poetry)
+      { char: 'ક' }, // Gujarati
+      { char: 'B' }, // English
+      { char: 'ગ' }, // Gujarati
+      { char: 'م' }, // Urdu/Arabic
+      { char: '字' }, // Chinese
+      { char: 'R' }, // English
+      { char: 'પ' }, // Gujarati
+      { char: 'न' }, // Hindi
+      { char: 'C' }, // English
+      { char: 'ક' }, // Hindi
+      { char: 'દ' }, // Gujarati
 ];
 
 function getRandomLetters(pool, count) {
-  const arr = [...pool];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, count).map((char) => ({ char: char.char }));
+      const arr = [...pool];
+      for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.slice(0, count).map((char) => ({ char: char.char }));
 }
 
 const AuthRegister = () => {
-  const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isArtist, setIsArtist] = useState(false);
-  const [errors, setErrors] = useState({ name: '', email: '', password: '', confirmPassword: '', general: '' });
+      const navigate = useNavigate();
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirmPassword, setConfirmPassword] = useState('');
+      const [isArtist, setIsArtist] = useState(false);
+      const [errors, setErrors] = useState({ name: '', email: '', password: '', confirmPassword: '', general: '' });
 
-  // Memoize so the letters don't change on every render
-  const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
+      // Memoize so the letters don't change on every render
+      const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
 
-  function validate() {
-    let valid = true;
-    const newErrors = { name: '', email: '', password: '', confirmPassword: '', general: '' };
-    if (!name) {
-      newErrors.name = 'Name is required.';
-      valid = false;
-    }
-    if (!email) {
-      newErrors.email = 'Email is required.';
-      valid = false;
-    } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      newErrors.email = 'Enter a valid email address.';
-      valid = false;
-    }
-    if (!password) {
-      newErrors.password = 'Password is required.';
-      valid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
-      valid = false;
-    }
-    if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password.';
-      valid = false;
-    } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = 'Passwords do not match.';
-      valid = false;
-    }
-    setErrors(newErrors);
-    return valid;
-  }
-
-  const [loading, setLoading] = useState(false);
-
-  async function handleRegister(e) {
-    e.preventDefault();
-    if (!validate()) return;
-    
-    setLoading(true);
-    setErrors({ name: '', email: '', password: '', confirmPassword: '', general: '' });
-    
-    try {
-      // Import here to avoid circular dependencies
-      const { register } = await import('../../services/authService');
-      
-      const userData = {
-        name,
-        email,
-        password,
-        mobileNumber: '', // Can be updated later in profile
-        isPerformer: isArtist
-      };
-      
-      const response = await register(userData);
-      
-      if (response.success) {
-        // Redirect based on user type
-        if (isArtist) {
-          navigate('/onboarding');
-        } else {
-          navigate('/');
-        }
+      function validate() {
+            let valid = true;
+            const newErrors = { name: '', email: '', password: '', confirmPassword: '', general: '' };
+            if (!name) {
+                  newErrors.name = 'Name is required.';
+                  valid = false;
+            }
+            if (!email) {
+                  newErrors.email = 'Email is required.';
+                  valid = false;
+            } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                  newErrors.email = 'Enter a valid email address.';
+                  valid = false;
+            }
+            if (!password) {
+                  newErrors.password = 'Password is required.';
+                  valid = false;
+            } else if (password.length < 6) {
+                  newErrors.password = 'Password must be at least 6 characters.';
+                  valid = false;
+            }
+            if (!confirmPassword) {
+                  newErrors.confirmPassword = 'Please confirm your password.';
+                  valid = false;
+            } else if (confirmPassword !== password) {
+                  newErrors.confirmPassword = 'Passwords do not match.';
+                  valid = false;
+            }
+            setErrors(newErrors);
+            return valid;
       }
-    } catch (error) {
-      setErrors({
-        ...errors,
-        general: error.message || 'Registration failed. Please try again.'
-      });
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  return (
-    <div className="auth-split-bg min-h-screen flex">
-      {/* Brand/Visual Section */}
-      <div className="auth-split-left hidden md:flex flex-col justify-center items-center w-1/2 bg-gradient-to-br from-indigo-700 via-indigo-500 to-blue-400 text-white p-12 relative overflow-hidden">
-        {/* Animated Boiling Bubbles Letters */}
-        <div className="boiling-letters">
-          {floatingLetters.map((letter, i) => (
-            <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
-          ))}
-        </div>
-        <div className="flex flex-col items-center z-10 relative">
-          <div className="auth-logo-big flex items-center justify-center rounded-2xl bg-white/10 shadow-lg mb-6">
-            <span className="text-5xl font-extrabold">R</span>
-          </div>
-          <h1 className="text-3xl font-bold mb-2 tracking-wide">Voice of Rajkot</h1>
-          <p className="text-lg font-medium mb-8 opacity-90">Join the community. Share your art.</p>
-        </div>
-        <div className="absolute bottom-8 left-0 w-full flex justify-center opacity-30">
-          <svg width="120" height="40"><ellipse cx="60" cy="20" rx="60" ry="18" fill="white"/></svg>
-        </div>
-      </div>
-      {/* Themed, Modern Register Form Section */}
-      <div className="auth-split-right flex flex-col justify-center items-center w-full md:w-1/2 bg-white px-6 py-12 md:px-16 min-h-screen">
-        <div className="themed-card-form w-full max-w-lg relative">
-          <div className="px-8 py-10 md:px-10 md:py-12">
-            <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Create your account</h2>
-            <p className="mb-8 text-gray-500 text-base text-center">Sign up to get started and join the artists of Rajkot.</p>
-            <form onSubmit={handleRegister} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="themed-label">Name</label>
-                <input id="name" type="text" className={`themed-input${errors.name ? ' input-error' : ''}`} value={name} onChange={e => setName(e.target.value)} required />
-                {errors.name && <span className="error-msg">{errors.name}</span>}
-              </div>
-              <div>
-                <label htmlFor="email" className="themed-label">Email</label>
-                <input id="email" type="email" className={`themed-input${errors.email ? ' input-error' : ''}`} value={email} onChange={e => setEmail(e.target.value)} required />
-                {errors.email && <span className="error-msg">{errors.email}</span>}
-              </div>
-              <div className="themed-row-2col">
-                <div>
-                  <label htmlFor="password" className="themed-label">Password</label>
-                  <input id="password" type="password" className={`themed-input${errors.password ? ' input-error' : ''}`} value={password} onChange={e => setPassword(e.target.value)} required />
-                  {errors.password && <span className="error-msg">{errors.password}</span>}
-                </div>
-                <div>
-                  <label htmlFor="confirmPassword" className="themed-label">Confirm Password</label>
-                  <input id="confirmPassword" type="password" className={`themed-input${errors.confirmPassword ? ' input-error' : ''}`} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
-                  {errors.confirmPassword && <span className="error-msg">{errors.confirmPassword}</span>}
-                </div>
-              </div>
-              <div className="flex items-center mb-2 mt-2">
-                <input type="checkbox" id="artist" checked={isArtist} onChange={e => setIsArtist(e.target.checked)} className="mr-2" />
-                <label htmlFor="artist" className="text-gray-700">Register as Artist/Poet</label>
-              </div>
-              {errors.general && <span className="error-msg block mb-2 text-center">{errors.general}</span>}
-              <button className="themed-btn w-full mt-2" type="submit" disabled={loading}>
-                {loading ? 'Registering...' : 'Register'}
-              </button>
-            </form>
-            <div className="mt-8 text-sm text-center">
-              <Link to="/login" className="text-indigo-600 hover:underline">Already have an account? Login</Link>
-            </div>
-          </div>
-        </div>
-      </div>
-      <style>{`
+      const [loading, setLoading] = useState(false);
+
+      async function handleRegister(e) {
+            e.preventDefault();
+            if (!validate()) return;
+
+            setLoading(true);
+            setErrors({ name: '', email: '', password: '', confirmPassword: '', general: '' });
+
+            try {
+                  // Import here to avoid circular dependencies
+                  const { register } = await import('../../services/authService');
+
+                  const userData = {
+                        name,
+                        email,
+                        password,
+                        mobileNumber: '', // Can be updated later in profile
+                        isPerformer: isArtist
+                  };
+
+                  const response = await register(userData);
+
+                  if (response.success) {
+                        // Redirect based on user type
+                        if (isArtist) {
+                              navigate('/onboarding');
+                        } else {
+                              navigate('/');
+                        }
+                  }
+            } catch (error) {
+                  setErrors({
+                        ...errors,
+                        general: error.message || 'Registration failed. Please try again.'
+                  });
+            } finally {
+                  setLoading(false);
+            }
+      }
+
+      return (
+            <div className="auth-split-bg min-h-screen flex">
+                  {/* Brand/Visual Section */}
+                  <div className="auth-split-left hidden md:flex flex-col justify-center items-center w-1/2 bg-gradient-to-br from-indigo-700 via-indigo-500 to-blue-400 text-white p-12 relative overflow-hidden">
+                        {/* Animated Boiling Bubbles Letters */}
+                        <div className="boiling-letters">
+                              {floatingLetters.map((letter, i) => (
+                                    <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
+                              ))}
+                        </div>
+                        <div className="flex flex-col items-center z-10 relative">
+                              <div className="auth-logo-big flex items-center justify-center rounded-2xl bg-white/10 shadow-lg mb-6">
+                                    <span className="text-5xl font-extrabold">R</span>
+                              </div>
+                              <h1 className="text-3xl font-bold mb-2 tracking-wide">Voice of Rajkot</h1>
+                              <p className="text-lg font-medium mb-8 opacity-90">Join the community. Share your art.</p>
+                        </div>
+                        <div className="absolute bottom-8 left-0 w-full flex justify-center opacity-30">
+                              <svg width="120" height="40"><ellipse cx="60" cy="20" rx="60" ry="18" fill="white" /></svg>
+                        </div>
+                  </div>
+                  {/* Themed, Modern Register Form Section */}
+                  <div className="auth-split-right flex flex-col justify-center items-center w-full md:w-1/2 bg-white px-6 py-12 md:px-16 min-h-screen">
+                        <div className="themed-card-form w-full max-w-lg relative">
+                              <div className="px-8 py-10 md:px-10 md:py-12">
+                                    <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Create your account</h2>
+                                    <p className="mb-8 text-gray-500 text-base text-center">Sign up to get started and join the artists of Rajkot.</p>
+                                    <form onSubmit={handleRegister} className="space-y-6">
+                                          <div>
+                                                <label htmlFor="name" className="themed-label">Name</label>
+                                                <input id="name" type="text" className={`themed-input${errors.name ? ' input-error' : ''}`} value={name} onChange={e => setName(e.target.value)} required />
+                                                {errors.name && <span className="error-msg">{errors.name}</span>}
+                                          </div>
+                                          <div>
+                                                <label htmlFor="email" className="themed-label">Email</label>
+                                                <input id="email" type="email" className={`themed-input${errors.email ? ' input-error' : ''}`} value={email} onChange={e => setEmail(e.target.value)} required />
+                                                {errors.email && <span className="error-msg">{errors.email}</span>}
+                                          </div>
+                                          <div className="themed-row-2col">
+                                                <div>
+                                                      <label htmlFor="password" className="themed-label">Password</label>
+                                                      <input id="password" type="password" className={`themed-input${errors.password ? ' input-error' : ''}`} value={password} onChange={e => setPassword(e.target.value)} required />
+                                                      {errors.password && <span className="error-msg">{errors.password}</span>}
+                                                </div>
+                                                <div>
+                                                      <label htmlFor="confirmPassword" className="themed-label">Confirm Password</label>
+                                                      <input id="confirmPassword" type="password" className={`themed-input${errors.confirmPassword ? ' input-error' : ''}`} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+                                                      {errors.confirmPassword && <span className="error-msg">{errors.confirmPassword}</span>}
+                                                </div>
+                                          </div>
+                                          <div className="flex items-center mb-2 mt-2">
+                                                <input type="checkbox" id="artist" checked={isArtist} onChange={e => setIsArtist(e.target.checked)} className="mr-2" />
+                                                <label htmlFor="artist" className="text-gray-700">Register as Artist/Poet</label>
+                                          </div>
+                                          {errors.general && <span className="error-msg block mb-2 text-center">{errors.general}</span>}
+                                          <button className="themed-btn w-full mt-2" type="submit" disabled={loading}>
+                                                {loading ? 'Registering...' : 'Register'}
+                                          </button>
+                                    </form>
+                                    <div className="mt-8 text-sm text-center">
+                                          <Link to="/login" className="text-indigo-600 hover:underline">Already have an account? Login</Link>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
+                  <style>{`
         .auth-split-bg {
           min-height: 100vh;
           background: #f8fafc;
@@ -349,8 +349,8 @@ const AuthRegister = () => {
           }
         }
       `}</style>
-    </div>
-  );
+            </div>
+      );
 };
 
 export default AuthRegister;

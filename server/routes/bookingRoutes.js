@@ -1,16 +1,17 @@
 import express from "express";
 import { protect, admin } from "../middleware/authMiddleware.js";
 import {
-  createBooking,
-  getBookings,
-  getBookingById,
-  getUserBookings,
-  getEventBookings,
-  cancelBooking,
-  uploadPaymentScreenshot,
-  upload,
-  verifyBooking,
-  rejectBooking,
+      createBooking,
+      getBookings,
+      getBookingById,
+      getUserBookings,
+      getVerifiedUserBookings,
+      getEventBookings,
+      cancelBooking,
+      uploadPaymentScreenshot,
+      upload,
+      verifyBooking,
+      rejectBooking,
 } from "../controllers/bookingController.js";
 
 const router = express.Router();
@@ -19,15 +20,16 @@ const router = express.Router();
 router.post("/", protect, createBooking);
 router.get("/", getBookings);
 router.get("/user", protect, getUserBookings);
+router.get("/user/verified", protect, getVerifiedUserBookings);
 router.get("/:id", protect, getBookingById);
 router.get("/event/:id", protect, getEventBookings);
 router.delete("/:id", protect, cancelBooking);
 // Add this route
 router.post(
-  "/:id/upload-payment",
-  protect,
-  upload.single("paymentScreenshot"),
-  uploadPaymentScreenshot
+      "/:id/upload-payment",
+      protect,
+      upload.single("paymentScreenshot"),
+      uploadPaymentScreenshot
 );
 
 // Admin actions: verify/reject booking

@@ -1,14 +1,14 @@
 import express from 'express';
 import { protect } from '../middleware/authMiddleware.js';
 import {
-    createPost,
-    getPosts,
-    getPostById,
-    updatePost,
-    deletePost,
-    likePost,
-    getPostsByAuthor,
-    getPostsByTag
+      createPost,
+      getPosts,
+      getPostById,
+      updatePost,
+      deletePost,
+      likePost,
+      getPostsByAuthor,
+      getPostsByTag
 } from '../controllers/postController.js';
 
 const router = express.Router();

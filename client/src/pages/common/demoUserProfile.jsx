@@ -3,174 +3,174 @@ import { useParams } from 'react-router-dom';
 import { FaQuoteLeft } from 'react-icons/fa';
 
 const DemoUserProfile = () => {
-  var { id } = useParams();
-  console.log("id", id);
-  id = 1;
-  const artists = [
-    {
-      id: 1,
-      name: 'Aarav Mehta',
-      photo: 'https://randomuser.me/api/portraits/men/32.jpg',
-      tags: ['Poet', 'Spoken Word'],
-      bio: 'Award-winning poet and spoken word performer. Loves to blend Gujarati and Hindi verse.',
-      about: 'Aarav has performed at over 50 poetry events across India, inspiring audiences with his unique blend of languages and heartfelt delivery. He is passionate about bringing poetry to the youth and often conducts workshops in schools and colleges.',
-      poetry: [
-        { id: 1, title: 'Whispers of the Monsoon', desc: 'A poem capturing the beauty and nostalgia of the first rains in Gujarat.', date: '2023-07-15' },
-        { id: 2, title: 'City Lights', desc: 'Reflections on life and dreams under the glowing city lights of Rajkot.', date: '2023-05-22' },
-        { id: 3, title: 'Roots', desc: "A heartfelt tribute to family, tradition, and the poet's Gujarati heritage.", date: '2022-12-10' },
-        { id: 4, title: 'Unspoken Verses', desc: 'Exploring the power of silence and the words left unsaid.', date: '2022-09-03' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Priya Shah',
-      photo: 'https://randomuser.me/api/portraits/women/44.jpg',
-      bio: 'Emerging voice in contemporary poetry. Finds inspiration in everyday life.',
-      tags: ['Poet'],
-      about: 'Priya is a rising star in the poetry world, known for her relatable verses and gentle delivery. She draws inspiration from daily life and the people around her.',
-      poetry: [
-        { id: 1, title: 'Morning Dew', desc: 'A fresh take on new beginnings and hope.', date: '2023-06-10' },
-        { id: 2, title: 'Threads', desc: 'A poem about connections and relationships.', date: '2023-03-18' }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Rahul Desai',
-      photo: 'https://randomuser.me/api/portraits/men/65.jpg',
-      bio: 'Performs at open mics across Gujarat. Known for his energetic stage presence.',
-      tags: ['Performer', 'Poet'],
-      about: 'Rahul is a dynamic performer who brings poetry to life on stage. He is a regular at open mics and poetry slams.',
-      poetry: [
-        { id: 1, title: 'Stage Lights', desc: 'A poem about the thrill of performing.', date: '2023-04-12' }
-      ]
-    },
-    {
-      id: 4,
-      name: 'Sneha Patel',
-      photo: 'https://randomuser.me/api/portraits/women/68.jpg',
-      bio: 'Writes and recites poetry in Gujarati and English. Passionate about youth poetry.',
-      tags: ['Poet', 'Youth'],
-      about: 'Sneha is passionate about encouraging young poets and often mentors students. She writes in both Gujarati and English.',
-      poetry: [
-        { id: 1, title: 'Bilingual Dreams', desc: 'A poem about identity in two languages.', date: '2023-02-20' }
-      ]
-    },
-    {
-      id: 5,
-      name: 'Vikram Joshi',
-      photo: 'https://randomuser.me/api/portraits/men/77.jpg',
-      bio: 'Performs classic and modern poetry. Organizes poetry workshops in Rajkot.',
-      tags: ['Performer', 'Workshop'],
-      about: 'Vikram is dedicated to keeping classic poetry alive and regularly organizes workshops for aspiring poets.',
-      poetry: [
-        { id: 1, title: 'Legacy', desc: 'A tribute to the great poets of the past.', date: '2022-11-05' }
-      ]
-    },
-    {
-      id: 6,
-      name: 'Kavya Trivedi',
-      photo: 'https://randomuser.me/api/portraits/women/12.jpg',
-      bio: 'Young poetess with a love for storytelling and rhyme. Featured in local magazines.',
-      tags: ['Poet', 'Storyteller'],
-      about: 'Kavya is a storyteller at heart, weaving tales and rhymes that captivate her audience. She has been featured in several local magazines.',
-      poetry: [
-        { id: 1, title: 'Tales in Rhyme', desc: 'A playful poem for children and adults alike.', date: '2023-01-15' }
-      ]
-    }
-  ];
+      var { id } = useParams();
+      console.log("id", id);
+      id = 1;
+      const artists = [
+            {
+                  id: 1,
+                  name: 'Aarav Mehta',
+                  photo: 'https://randomuser.me/api/portraits/men/32.jpg',
+                  tags: ['Poet', 'Spoken Word'],
+                  bio: 'Award-winning poet and spoken word performer. Loves to blend Gujarati and Hindi verse.',
+                  about: 'Aarav has performed at over 50 poetry events across India, inspiring audiences with his unique blend of languages and heartfelt delivery. He is passionate about bringing poetry to the youth and often conducts workshops in schools and colleges.',
+                  poetry: [
+                        { id: 1, title: 'Whispers of the Monsoon', desc: 'A poem capturing the beauty and nostalgia of the first rains in Gujarat.', date: '2023-07-15' },
+                        { id: 2, title: 'City Lights', desc: 'Reflections on life and dreams under the glowing city lights of Rajkot.', date: '2023-05-22' },
+                        { id: 3, title: 'Roots', desc: "A heartfelt tribute to family, tradition, and the poet's Gujarati heritage.", date: '2022-12-10' },
+                        { id: 4, title: 'Unspoken Verses', desc: 'Exploring the power of silence and the words left unsaid.', date: '2022-09-03' }
+                  ]
+            },
+            {
+                  id: 2,
+                  name: 'Priya Shah',
+                  photo: 'https://randomuser.me/api/portraits/women/44.jpg',
+                  bio: 'Emerging voice in contemporary poetry. Finds inspiration in everyday life.',
+                  tags: ['Poet'],
+                  about: 'Priya is a rising star in the poetry world, known for her relatable verses and gentle delivery. She draws inspiration from daily life and the people around her.',
+                  poetry: [
+                        { id: 1, title: 'Morning Dew', desc: 'A fresh take on new beginnings and hope.', date: '2023-06-10' },
+                        { id: 2, title: 'Threads', desc: 'A poem about connections and relationships.', date: '2023-03-18' }
+                  ]
+            },
+            {
+                  id: 3,
+                  name: 'Rahul Desai',
+                  photo: 'https://randomuser.me/api/portraits/men/65.jpg',
+                  bio: 'Performs at open mics across Gujarat. Known for his energetic stage presence.',
+                  tags: ['Performer', 'Poet'],
+                  about: 'Rahul is a dynamic performer who brings poetry to life on stage. He is a regular at open mics and poetry slams.',
+                  poetry: [
+                        { id: 1, title: 'Stage Lights', desc: 'A poem about the thrill of performing.', date: '2023-04-12' }
+                  ]
+            },
+            {
+                  id: 4,
+                  name: 'Sneha Patel',
+                  photo: 'https://randomuser.me/api/portraits/women/68.jpg',
+                  bio: 'Writes and recites poetry in Gujarati and English. Passionate about youth poetry.',
+                  tags: ['Poet', 'Youth'],
+                  about: 'Sneha is passionate about encouraging young poets and often mentors students. She writes in both Gujarati and English.',
+                  poetry: [
+                        { id: 1, title: 'Bilingual Dreams', desc: 'A poem about identity in two languages.', date: '2023-02-20' }
+                  ]
+            },
+            {
+                  id: 5,
+                  name: 'Vikram Joshi',
+                  photo: 'https://randomuser.me/api/portraits/men/77.jpg',
+                  bio: 'Performs classic and modern poetry. Organizes poetry workshops in Rajkot.',
+                  tags: ['Performer', 'Workshop'],
+                  about: 'Vikram is dedicated to keeping classic poetry alive and regularly organizes workshops for aspiring poets.',
+                  poetry: [
+                        { id: 1, title: 'Legacy', desc: 'A tribute to the great poets of the past.', date: '2022-11-05' }
+                  ]
+            },
+            {
+                  id: 6,
+                  name: 'Kavya Trivedi',
+                  photo: 'https://randomuser.me/api/portraits/women/12.jpg',
+                  bio: 'Young poetess with a love for storytelling and rhyme. Featured in local magazines.',
+                  tags: ['Poet', 'Storyteller'],
+                  about: 'Kavya is a storyteller at heart, weaving tales and rhymes that captivate her audience. She has been featured in several local magazines.',
+                  poetry: [
+                        { id: 1, title: 'Tales in Rhyme', desc: 'A playful poem for children and adults alike.', date: '2023-01-15' }
+                  ]
+            }
+      ];
 
-  const artist = artists.find(a => a.id === parseInt(id));
+      const artist = artists.find(a => a.id === parseInt(id));
 
-  if (!artist) {
-    return (
-      <section className="artist-profile-section">
-        <div className="text-center text-lg text-red-600 mt-20">Artist not found.</div>
-      </section>
-    );
-  }
+      if (!artist) {
+            return (
+                  <section className="artist-profile-section">
+                        <div className="text-center text-lg text-red-600 mt-20">Artist not found.</div>
+                  </section>
+            );
+      }
 
-  return (
-    <section className="artist-profile-section">
-      <div className="artist-profile-header mb-10 px-4 md:px-12">
-        <h2 className="artist-profile-title">Artist Profile</h2>
-        <div className="artist-profile-title-underline artist-profile-title-underline-animated"></div>
-        <div className="artist-profile-subheading">Discover the journey and works of this talented artist</div>
-      </div>
-      <div className="events-tile-header-divider"></div>
-      {/* Wide Profile Card */}
-      <div className="artist-profile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 max-w-6xl mx-auto mb-14">
-        <div className="artist-accent-bar"></div>
-        {/* Photo Section - Left Side */}
-        <div className="artist-profile-photo-section w-full md:w-1/3 relative overflow-hidden">
-          <img src={artist.photo} alt={artist.name} className="artist-profile-photo w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        </div>
-        {/* Details Section - Right Side */}
-        <div className="artist-profile-details-section w-full md:w-2/3 p-8 md:p-12">
-          <div className="flex flex-col h-full justify-between">
-            <div>
-              <h3 className="artist-profile-name text-3xl font-bold text-indigo-800 mb-4">{artist.name}</h3>
-              <div className="artist-profile-tags flex flex-wrap gap-3 mb-6">
-                {artist.tags.map((tag) => (
-                  <span key={tag} className="artist-profile-tag bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full text-base">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <p className="artist-profile-bio text-gray-600 mb-6 text-lg leading-relaxed">{artist.bio}</p>
-            </div>
-            
-            <div className="artist-profile-about-block bg-gray-50 border border-gray-200 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <div className="about-icon bg-indigo-100 rounded-full p-3 flex-shrink-0">
-                  <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg text-gray-800 mb-2">About</h4>
-                  <p className="text-gray-600 text-base leading-relaxed">{artist.about}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Poetry Collection */}
-      <div className="max-w-6xl mx-auto px-4 md:px-0">
-        <h3 className="poetry-section-title">Poetry Collection</h3>
-        <div className="poetry-section-title-underline"></div>
-        <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
-          {artist.poetry.map(poem => (
-            <div key={poem.id} className="featured-poem-card-pro group flex flex-col justify-between relative">
-              <span className="featured-poem-quote-icon-pro">
-                <FaQuoteLeft />
-              </span>
-              <div className="featured-poem-phrase-pro mb-8">
-                {poem.desc}
-                <span className="featured-poem-underline-pro"></span>
-              </div>
-              <div className="featured-poem-divider-pro"></div>
-              <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
-                <img
-                  className="featured-poem-author-img-pro"
-                  src={artist.photo}
-                  alt={artist.name}
-                />
-                <div className="flex flex-col">
-                  <span className="featured-poem-author-name-pro">
-                    {artist.name}
-                  </span>
-                  <span className="featured-poem-author-role-pro">
-                    {artist.tags.join(' & ')}
-                  </span>
-                </div>
-                <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">{poem.date}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <style jsx>{`
+      return (
+            <section className="artist-profile-section">
+                  <div className="artist-profile-header mb-10 px-4 md:px-12">
+                        <h2 className="artist-profile-title">Artist Profile</h2>
+                        <div className="artist-profile-title-underline artist-profile-title-underline-animated"></div>
+                        <div className="artist-profile-subheading">Discover the journey and works of this talented artist</div>
+                  </div>
+                  <div className="events-tile-header-divider"></div>
+                  {/* Wide Profile Card */}
+                  <div className="artist-profile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 max-w-6xl mx-auto mb-14">
+                        <div className="artist-accent-bar"></div>
+                        {/* Photo Section - Left Side */}
+                        <div className="artist-profile-photo-section w-full md:w-1/3 relative overflow-hidden">
+                              <img src={artist.photo} alt={artist.name} className="artist-profile-photo w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                        {/* Details Section - Right Side */}
+                        <div className="artist-profile-details-section w-full md:w-2/3 p-8 md:p-12">
+                              <div className="flex flex-col h-full justify-between">
+                                    <div>
+                                          <h3 className="artist-profile-name text-3xl font-bold text-indigo-800 mb-4">{artist.name}</h3>
+                                          <div className="artist-profile-tags flex flex-wrap gap-3 mb-6">
+                                                {artist.tags.map((tag) => (
+                                                      <span key={tag} className="artist-profile-tag bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full text-base">
+                                                            {tag}
+                                                      </span>
+                                                ))}
+                                          </div>
+                                          <p className="artist-profile-bio text-gray-600 mb-6 text-lg leading-relaxed">{artist.bio}</p>
+                                    </div>
+
+                                    <div className="artist-profile-about-block bg-gray-50 border border-gray-200 rounded-xl p-6">
+                                          <div className="flex items-start gap-4">
+                                                <div className="about-icon bg-indigo-100 rounded-full p-3 flex-shrink-0">
+                                                      <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                      </svg>
+                                                </div>
+                                                <div>
+                                                      <h4 className="font-semibold text-lg text-gray-800 mb-2">About</h4>
+                                                      <p className="text-gray-600 text-base leading-relaxed">{artist.about}</p>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
+                  {/* Poetry Collection */}
+                  <div className="max-w-6xl mx-auto px-4 md:px-0">
+                        <h3 className="poetry-section-title">Poetry Collection</h3>
+                        <div className="poetry-section-title-underline"></div>
+                        <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
+                              {artist.poetry.map(poem => (
+                                    <div key={poem.id} className="featured-poem-card-pro group flex flex-col justify-between relative">
+                                          <span className="featured-poem-quote-icon-pro">
+                                                <FaQuoteLeft />
+                                          </span>
+                                          <div className="featured-poem-phrase-pro mb-8">
+                                                {poem.desc}
+                                                <span className="featured-poem-underline-pro"></span>
+                                          </div>
+                                          <div className="featured-poem-divider-pro"></div>
+                                          <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
+                                                <img
+                                                      className="featured-poem-author-img-pro"
+                                                      src={artist.photo}
+                                                      alt={artist.name}
+                                                />
+                                                <div className="flex flex-col">
+                                                      <span className="featured-poem-author-name-pro">
+                                                            {artist.name}
+                                                      </span>
+                                                      <span className="featured-poem-author-role-pro">
+                                                            {artist.tags.join(' & ')}
+                                                      </span>
+                                                </div>
+                                                <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">{poem.date}</span>
+                                          </div>
+                                    </div>
+                              ))}
+                        </div>
+                  </div>
+                  <style jsx>{`
         .artist-profile-section {
           background: #f8fafc;
           padding-top: 4.5rem;
@@ -477,8 +477,8 @@ const DemoUserProfile = () => {
           }
         }
       `}</style>
-    </section>
-  );
+            </section>
+      );
 };
 
 export default DemoUserProfile; 

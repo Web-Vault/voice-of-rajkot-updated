@@ -4,69 +4,69 @@ import { FaArrowRight } from "react-icons/fa";
 import { getAllPerformers } from "../../services/userService";
 
 const ArtistList = () => {
-  const [artists, setArtists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+      const [artists, setArtists] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchArtists = async () => {
-      try {
-        const performers = await getAllPerformers();
-        setArtists(performers);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch artists');
-        setLoading(false);
+      useEffect(() => {
+            const fetchArtists = async () => {
+                  try {
+                        const performers = await getAllPerformers();
+                        setArtists(performers);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || 'Failed to fetch artists');
+                        setLoading(false);
+                  }
+            };
+            fetchArtists();
+      }, []);
+
+      if (loading) {
+            return <div className="text-center py-10">Loading artists...</div>;
       }
-    };
-    fetchArtists();
-  }, []);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading artists...</div>;
-  }
+      if (error) {
+            return <div className="text-center text-red-600 py-10">{error}</div>;
+      }
 
-  if (error) {
-    return <div className="text-center text-red-600 py-10">{error}</div>;
-  }
-
-  return (
-    <>
-      <section className="artists-list-section">
-        <div className="artists-list-header mb-10 px-4 md:px-12">
-          <h2 className="artists-list-title">Featured Artists</h2>
-          <div className="artists-list-title-underline artists-list-title-underline-animated"></div>
-          <div className="artists-list-subheading">Meet the talented poets and performers of Rajkot. Discover their work and connect with your favorites!</div>
-        </div>
-        <div className="events-tile-header-divider"></div>
-        <div className="artists-list-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto px-4 md:px-0">
-          {artists.map((artist) => (
-            <div key={artist._id} className="artist-card group relative overflow-hidden flex flex-col items-center p-0 border border-[#e0e7ff] rounded-2xl bg-gradient-to-br from-white via-indigo-50 to-indigo-100 shadow-md hover:shadow-xl transition-all">
-              <div className="artist-accent-bar"></div>
-              <div className="flex flex-col items-center w-full pt-8 pb-4 px-7">
-                <img 
-                  src={artist.profilePhoto || 'https://randomuser.me/api/portraits/lego/1.jpg'} 
-                  alt={artist.name} 
-                  className="artist-photo mb-5 rounded-full border-4 border-indigo-100 w-28 h-28 object-cover shadow" 
-                />
-                <h3 className="artist-name text-xl font-extrabold text-indigo-800 mb-2 text-center">{artist.name}</h3>
-                <p className="artist-bio text-gray-700 text-center mb-4 px-2">{artist.bio || artist.oneLineDesc}</p>
-                <div className="artist-tags flex flex-wrap gap-2 justify-center mb-4">
-                  {artist.profileTags?.map((tag) => (
-                    <span key={tag} className="artist-tag">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <Link to={`/artist/${artist._id}`} className="artist-tile-details-btn-wrap w-full px-7 pb-7">
-                <button className="artist-tile-details-btn w-full flex items-center justify-center gap-2">
-                  View Profile <FaArrowRight />
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-      <style>{`
+      return (
+            <>
+                  <section className="artists-list-section">
+                        <div className="artists-list-header mb-10 px-4 md:px-12">
+                              <h2 className="artists-list-title">Featured Artists</h2>
+                              <div className="artists-list-title-underline artists-list-title-underline-animated"></div>
+                              <div className="artists-list-subheading">Meet the talented poets and performers of Rajkot. Discover their work and connect with your favorites!</div>
+                        </div>
+                        <div className="events-tile-header-divider"></div>
+                        <div className="artists-list-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto px-4 md:px-0">
+                              {artists.map((artist) => (
+                                    <div key={artist._id} className="artist-card group relative overflow-hidden flex flex-col items-center p-0 border border-[#e0e7ff] rounded-2xl bg-gradient-to-br from-white via-indigo-50 to-indigo-100 shadow-md hover:shadow-xl transition-all">
+                                          <div className="artist-accent-bar"></div>
+                                          <div className="flex flex-col items-center w-full pt-8 pb-4 px-7">
+                                                <img
+                                                      src={artist.profilePhoto || 'https://randomuser.me/api/portraits/lego/1.jpg'}
+                                                      alt={artist.name}
+                                                      className="artist-photo mb-5 rounded-full border-4 border-indigo-100 w-28 h-28 object-cover shadow"
+                                                />
+                                                <h3 className="artist-name text-xl font-extrabold text-indigo-800 mb-2 text-center">{artist.name}</h3>
+                                                <p className="artist-bio text-gray-700 text-center mb-4 px-2">{artist.bio || artist.oneLineDesc}</p>
+                                                <div className="artist-tags flex flex-wrap gap-2 justify-center mb-4">
+                                                      {artist.profileTags?.map((tag) => (
+                                                            <span key={tag} className="artist-tag">{tag}</span>
+                                                      ))}
+                                                </div>
+                                          </div>
+                                          <Link to={`/artist/${artist._id}`} className="artist-tile-details-btn-wrap w-full px-7 pb-7">
+                                                <button className="artist-tile-details-btn w-full flex items-center justify-center gap-2">
+                                                      View Profile <FaArrowRight />
+                                                </button>
+                                          </Link>
+                                    </div>
+                              ))}
+                        </div>
+                  </section>
+                  <style>{`
 .events-tile-header-divider {
   max-width: 1600px;
   margin: 0 auto 2.5rem auto;
@@ -238,7 +238,7 @@ const ArtistList = () => {
   }
 }
       `}</style>    </>
-  );
+      );
 };
 
 export default ArtistList;

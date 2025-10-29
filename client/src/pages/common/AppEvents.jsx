@@ -1,113 +1,113 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaChair,
-  FaArrowRight,
+      FaCalendarAlt,
+      FaMapMarkerAlt,
+      FaChair,
+      FaArrowRight,
 } from "react-icons/fa";
 import { getAllEvents } from "../../services/eventService";
 import { format } from "date-fns";
 
 const AppEvents = () => {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+      const [events, setEvents] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const data = await getAllEvents();
-        setEvents(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch events');
-        setLoading(false);
+      useEffect(() => {
+            const fetchEvents = async () => {
+                  try {
+                        const data = await getAllEvents();
+                        setEvents(data);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || 'Failed to fetch events');
+                        setLoading(false);
+                  }
+            };
+            fetchEvents();
+      }, []);
+
+      if (loading) {
+            return <div className="text-center py-20">Loading events...</div>;
       }
-    };
-    fetchEvents();
-  }, []);
 
-  if (loading) {
-    return <div className="text-center py-20">Loading events...</div>;
-  }
+      if (error) {
+            return <div className="text-center py-20 text-red-600">{error}</div>;
+      }
 
-  if (error) {
-    return <div className="text-center py-20 text-red-600">{error}</div>;
-  }
-
-  return (
-    <>
-      {/* UPCOMING EVENTS SECTION */}
-      <section className="events-tile-section">
-        <div className="events-tile-header flex flex-col md:flex-row md:items-center md:justify-between mb-8 px-4 md:px-12 gap-4 md:gap-0">
-          <div className="flex flex-col items-start">
-            <h2 className="events-tile-title events-tile-title-enhanced">
-              Upcoming Events
-            </h2>
-            <div className="events-tile-title-underline events-tile-title-underline-animated"></div>
-            <div className="events-tile-subheading">
-              Don't miss the next poetry gatherings in Rajkot. Reserve your seat
-              now!
-            </div>
-          </div>
-        </div>
-        <div className="events-tile-header-divider"></div>
-        <div className="events-tile-carousel-wrap relative">
-          <div className="events-tile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mx-auto max-w-6xl px-4 md:px-0">
-            {events.filter(event => new Date(event.dateTime) > new Date()).map((event) => (
-              <div
-                key={event._id}
-                className="event-tile-item group relative w-full"
-              >
-                <div className="event-tile-img-wrap relative">
-                  <img
-                    src={event.coverImage || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
-                    alt={event.title}
-                    className="event-tile-img event-tile-img-taller"
-                  />
-                  <div className="event-tile-img-fade-short"></div>
-                  <div className="event-tile-date-badge">
-                    <FaCalendarAlt className="mr-1" /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}
-                  </div>
-                  <div className="event-tile-img-title">{event.name}</div>
-                </div>
-                <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
-                  <p className="event-tile-desc mb-2">{event.description}</p>
-                  <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
-                    <span className="flex items-center gap-1">
-                      <FaMapMarkerAlt /> {event.venue}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
-                    </span>
-                  </div>
-                  <div className="event-tile-progress-wrap mt-2 mb-3">
-                    <div className="event-tile-progress-bg">
-                      <div
-                        className="event-tile-progress-fill"
-                        style={{ width: `${(event.bookedSeats / event.totalSeats) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="event-tile-progress-label">
-                      {Math.round((event.bookedSeats / event.totalSeats) * 100)}% booked
-                    </span>
-                  </div>
-                  <Link
-                    to={`/events/${event._id}`}
-                    className="event-tile-details-btn-wrap mt-2"
-                  >
-                    <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
-                      More Details <FaArrowRight />
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <style>{`
+      return (
+            <>
+                  {/* UPCOMING EVENTS SECTION */}
+                  <section className="events-tile-section">
+                        <div className="events-tile-header flex flex-col md:flex-row md:items-center md:justify-between mb-8 px-4 md:px-12 gap-4 md:gap-0">
+                              <div className="flex flex-col items-start">
+                                    <h2 className="events-tile-title events-tile-title-enhanced">
+                                          Upcoming Events
+                                    </h2>
+                                    <div className="events-tile-title-underline events-tile-title-underline-animated"></div>
+                                    <div className="events-tile-subheading">
+                                          Don't miss the next poetry gatherings in Rajkot. Reserve your seat
+                                          now!
+                                    </div>
+                              </div>
+                        </div>
+                        <div className="events-tile-header-divider"></div>
+                        <div className="events-tile-carousel-wrap relative">
+                              <div className="events-tile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 mx-auto max-w-6xl px-4 md:px-0">
+                                    {events.filter(event => new Date(event.dateTime) > new Date()).map((event) => (
+                                          <div
+                                                key={event._id}
+                                                className="event-tile-item group relative w-full"
+                                          >
+                                                <div className="event-tile-img-wrap relative">
+                                                      <img
+                                                            src={event.coverImage || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
+                                                            alt={event.title}
+                                                            className="event-tile-img event-tile-img-taller"
+                                                      />
+                                                      <div className="event-tile-img-fade-short"></div>
+                                                      <div className="event-tile-date-badge">
+                                                            <FaCalendarAlt className="mr-1" /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}
+                                                      </div>
+                                                      <div className="event-tile-img-title">{event.name}</div>
+                                                </div>
+                                                <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
+                                                      <p className="event-tile-desc mb-2">{event.description}</p>
+                                                      <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
+                                                            <span className="flex items-center gap-1">
+                                                                  <FaMapMarkerAlt /> {event.venue}
+                                                            </span>
+                                                            <span className="flex items-center gap-1">
+                                                                  <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
+                                                            </span>
+                                                      </div>
+                                                      <div className="event-tile-progress-wrap mt-2 mb-3">
+                                                            <div className="event-tile-progress-bg">
+                                                                  <div
+                                                                        className="event-tile-progress-fill"
+                                                                        style={{ width: `${(event.bookedSeats / event.totalSeats) * 100}%` }}
+                                                                  ></div>
+                                                            </div>
+                                                            <span className="event-tile-progress-label">
+                                                                  {Math.round((event.bookedSeats / event.totalSeats) * 100)}% booked
+                                                            </span>
+                                                      </div>
+                                                      <Link
+                                                            to={`/events/${event._id}`}
+                                                            className="event-tile-details-btn-wrap mt-2"
+                                                      >
+                                                            <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
+                                                                  More Details <FaArrowRight />
+                                                            </button>
+                                                      </Link>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
+                  </section>
+                  <style>{`
 /* --- Copy styles from AppHome.vue for events section --- */
 .events-tile-section {
   width: 100%;
@@ -445,8 +445,8 @@ const AppEvents = () => {
   }
 }
       `}</style>
-    </>
-  );
+            </>
+      );
 };
 
 export default AppEvents;

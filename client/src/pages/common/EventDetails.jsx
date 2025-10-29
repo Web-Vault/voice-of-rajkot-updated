@@ -5,143 +5,142 @@ import { getEventById } from "../../services/eventService";
 import { format } from "date-fns";
 
 const EventDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+      const { id } = useParams();
+      const navigate = useNavigate();
+      const [event, setEvent] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [showDropdown, setShowDropdown] = useState(false);
 
-  useEffect(() => {
-    const fetchEventDetails = async () => {
-      try {
-        const data = await getEventById(id);
-        setEvent(data.event);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch event details');
-        setLoading(false);
+      useEffect(() => {
+            const fetchEventDetails = async () => {
+                  try {
+                        const data = await getEventById(id);
+                        setEvent(data.event);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || 'Failed to fetch event details');
+                        setLoading(false);
+                  }
+            };
+            fetchEventDetails();
+      }, [id]);
+
+      const handleRegisterAsAudience = () => {
+            navigate(`/register/audience/${id}`);
+            setShowDropdown(false);
+      };
+
+      const handleRegisterAsPerformer = () => {
+            navigate(`/register/performer/${id}`);
+            setShowDropdown(false);
+      };
+
+      if (loading) {
+            return <div className="text-center py-20">Loading event details...</div>;
       }
-    };
-    fetchEventDetails();
-  }, [id]);
 
-  const handleRegisterAsAudience = () => {
-    navigate(`/register/audience/${id}`);
-    setShowDropdown(false);
-  };
+      if (error) {
+            return <div className="text-center py-20 text-red-600">{error}</div>;
+      }
 
-  const handleRegisterAsPerformer = () => {
-    navigate(`/register/performer/${id}`);
-    setShowDropdown(false);
-  };
+      if (!event) {
+            return <div className="text-center py-20">Event not found</div>;
+      }
 
-  if (loading) {
-    return <div className="text-center py-20">Loading event details...</div>;
-  }
+      const availableSeats = event.totalSeats - event.bookedSeats;
+      const bookedPercent = Math.round((event.bookedSeats / event.totalSeats) * 100);
 
-  if (error) {
-    return <div className="text-center py-20 text-red-600">{error}</div>;
-  }
+      return (
+            <div className="eventdetails-fullscreen-refined">
+                  {/* HERO SECTION */}
+                  <div className="eventdetails-hero">
+                        <img src={event.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"}
+                              alt={event.name}
+                              className="eventdetails-hero-img" />
+                        <div className="eventdetails-hero-overlay"></div>
+                        <div className="eventdetails-hero-content">
+                              <div className="eventdetails-hero-title-wrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+                                    <h1 className="eventdetails-hero-title" style={{ textAlign: 'left', width: '100%' }}>{event.name}</h1>
+                                    <div className="eventdetails-hero-underline" style={{ marginLeft: 0, marginRight: 0 }}></div>
+                              </div>
+                              <div className="eventdetails-hero-meta">
+                                    <span><FaCalendarAlt /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}</span>
+                                    <span><FaMapMarkerAlt /> {event.venue}</span>
+                              </div>
+                        </div>
+                  </div>
 
-  if (!event) {
-    return <div className="text-center py-20">Event not found</div>;
-  }
+                  {/* INFO PANEL */}
+                  <section className="eventdetails-info-panel">
+                        <div className="eventdetails-info-flex">
+                              <div className="eventdetails-info-left">
+                                    <p
+                                          className="eventdetails-info-desc"
+                                          style={{ whiteSpace: "pre-line" }}
+                                    >
+                                          {event.description}
+                                    </p>
+                                    <div className="eventdetails-performers-row">
+                                          {event.performers.map((performer, idx) => (
+                                                <div key={idx} className="eventdetails-performer-avatar-wrap">
+                                                      <img
+                                                            src={
+                                                                  performer.profilePhoto ||
+                                                                  `https://randomuser.me/api/portraits/${performer.gender === "female" ? "women" : "men"
+                                                                  }/${(idx + 1) * 11}.jpg`
+                                                            }
+                                                            alt={performer.name}
+                                                            className="eventdetails-performer-avatar"
+                                                      />
+                                                      <div className="eventdetails-performer-name">{performer.name}</div>
+                                                      <div className="eventdetails-performer-role">Performer</div>
+                                                </div>
+                                          ))}
+                                    </div>
+                              </div>
+                              {/* Right: Seats, Price, Buy Button */}
+                              <div className="eventdetails-info-right">
+                                    <div className="eventdetails-seats-label flex items-center gap-2 mb-1"><FaChair /> Seats</div>
+                                    <div className="eventdetails-seats-booked">{event.bookedSeats} / {event.totalSeats} booked</div>
+                                    <div className="eventdetails-seats-bar-bg">
+                                          <div className="eventdetails-seats-bar-fill" style={{ width: `${bookedPercent}%` }}></div>
+                                    </div>
+                                    <div className="eventdetails-seats-available">{availableSeats} available</div>
+                                    <div className="eventdetails-seats-price flex items-center gap-2"><FaRupeeSign /> {event.price} <span>per seat</span></div>
+                                    <div className="eventdetails-register-dropdown-wrap">
+                                          <button
+                                                className="eventdetails-buy-btn-glow-refined"
+                                                onClick={() => setShowDropdown(!showDropdown)}
+                                          >
+                                                <FaTicketAlt /> Register Yourself
+                                          </button>
+                                          {showDropdown && (
+                                                <div className="eventdetails-dropdown-menu">
+                                                      <button
+                                                            className="eventdetails-dropdown-item"
+                                                            onClick={handleRegisterAsAudience}
+                                                      >
+                                                            <FaUsers /> Register as Audience
+                                                      </button>
+                                                      <button
+                                                            className="eventdetails-dropdown-item"
+                                                            onClick={handleRegisterAsPerformer}
+                                                      >
+                                                            <FaMicrophone /> Register as Performer
+                                                      </button>
+                                                </div>
+                                          )}
+                                    </div>
+                              </div>
+                        </div>
+                  </section>
 
-  const availableSeats = event.totalSeats - event.bookedSeats;
-  const bookedPercent = Math.round((event.bookedSeats / event.totalSeats) * 100);
+                  {/* OTHER EVENTS */}
+                  {/* --- Other Events section would go here. Uncomment and implement as needed. --- */}
 
-  return (
-    <div className="eventdetails-fullscreen-refined">
-      {/* HERO SECTION */}
-      <div className="eventdetails-hero">
-        <img src={event.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"} 
-             alt={event.name} 
-             className="eventdetails-hero-img" />
-        <div className="eventdetails-hero-overlay"></div>
-        <div className="eventdetails-hero-content">
-          <div className="eventdetails-hero-title-wrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-            <h1 className="eventdetails-hero-title" style={{ textAlign: 'left', width: '100%' }}>{event.name}</h1>
-            <div className="eventdetails-hero-underline" style={{ marginLeft: 0, marginRight: 0 }}></div>
-          </div>
-          <div className="eventdetails-hero-meta">
-            <span><FaCalendarAlt /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}</span>
-            <span><FaMapMarkerAlt /> {event.venue}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* INFO PANEL */}
-      <section className="eventdetails-info-panel">
-        <div className="eventdetails-info-flex">
-          <div className="eventdetails-info-left">
-            <p
-              className="eventdetails-info-desc"
-              style={{ whiteSpace: "pre-line" }}
-            >
-              {event.description}
-            </p>
-            <div className="eventdetails-performers-row">
-              {event.performers.map((performer, idx) => (
-                <div key={idx} className="eventdetails-performer-avatar-wrap">
-                  <img
-                    src={
-                      performer.profilePhoto ||
-                      `https://randomuser.me/api/portraits/${
-                        performer.gender === "female" ? "women" : "men"
-                      }/${(idx + 1) * 11}.jpg`
-                    }
-                    alt={performer.name}
-                    className="eventdetails-performer-avatar"
-                  />
-                  <div className="eventdetails-performer-name">{performer.name}</div>
-                  <div className="eventdetails-performer-role">Performer</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Right: Seats, Price, Buy Button */}
-          <div className="eventdetails-info-right">
-            <div className="eventdetails-seats-label flex items-center gap-2 mb-1"><FaChair /> Seats</div>
-            <div className="eventdetails-seats-booked">{event.bookedSeats} / {event.totalSeats} booked</div>
-            <div className="eventdetails-seats-bar-bg">
-              <div className="eventdetails-seats-bar-fill" style={{ width: `${bookedPercent}%` }}></div>
-            </div>
-            <div className="eventdetails-seats-available">{availableSeats} available</div>
-            <div className="eventdetails-seats-price flex items-center gap-2"><FaRupeeSign /> {event.price} <span>per seat</span></div>
-            <div className="eventdetails-register-dropdown-wrap">
-              <button 
-                className="eventdetails-buy-btn-glow-refined"
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                <FaTicketAlt /> Register Yourself
-              </button>
-              {showDropdown && (
-                <div className="eventdetails-dropdown-menu">
-                  <button 
-                    className="eventdetails-dropdown-item"
-                    onClick={handleRegisterAsAudience}
-                  >
-                    <FaUsers /> Register as Audience
-                  </button>
-                  <button 
-                    className="eventdetails-dropdown-item"
-                    onClick={handleRegisterAsPerformer}
-                  >
-                    <FaMicrophone /> Register as Performer
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* OTHER EVENTS */}
-      {/* --- Other Events section would go here. Uncomment and implement as needed. --- */}
-
-      {/* Styles */}
-      <style>{`
+                  {/* Styles */}
+                  <style>{`
         .eventdetails-fullscreen-refined {
           min-height: 100vh;
           background: #f8fafc;
@@ -662,8 +661,8 @@ const EventDetails = () => {
         }
       `}</style>
 
-</div>
-    );
+            </div>
+      );
 };
 
 export default EventDetails;

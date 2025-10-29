@@ -2,88 +2,88 @@ import React, { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const letterPool = [
-  { char: 'અ' }, // Gujarati
-  { char: 'क' }, // Hindi
-  { char: 'A' }, // English
-  { char: 'ش' }, // Urdu/Arabic
-  { char: '诗' }, // Chinese (poetry)
-  { char: 'ક' }, // Gujarati
-  { char: 'B' }, // English
-  { char: 'ગ' }, // Gujarati
-  { char: 'م' }, // Urdu/Arabic
-  { char: '字' }, // Chinese
-  { char: 'R' }, // English
-  { char: 'પ' }, // Gujarati
-  { char: 'न' }, // Hindi
-  { char: 'C' }, // English
-  { char: 'ક' }, // Hindi
-  { char: 'દ' }, // Gujarati
+      { char: 'અ' }, // Gujarati
+      { char: 'क' }, // Hindi
+      { char: 'A' }, // English
+      { char: 'ش' }, // Urdu/Arabic
+      { char: '诗' }, // Chinese (poetry)
+      { char: 'ક' }, // Gujarati
+      { char: 'B' }, // English
+      { char: 'ગ' }, // Gujarati
+      { char: 'م' }, // Urdu/Arabic
+      { char: '字' }, // Chinese
+      { char: 'R' }, // English
+      { char: 'પ' }, // Gujarati
+      { char: 'न' }, // Hindi
+      { char: 'C' }, // English
+      { char: 'ક' }, // Hindi
+      { char: 'દ' }, // Gujarati
 ];
 
 function getRandomLetters(pool, count) {
-  const arr = [...pool];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, count).map((char) => ({ char: char.char }));
+      const arr = [...pool];
+      for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.slice(0, count).map((char) => ({ char: char.char }));
 }
 
 const EmailVerification = () => {
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
+      const [otp, setOtp] = useState("");
+      const [error, setError] = useState("");
+      const navigate = useNavigate();
+      const floatingLetters = useMemo(() => getRandomLetters(letterPool, 16), []);
 
-  function handleVerify(e) {
-    e.preventDefault();
-    setError("");
-    if (!otp) {
-      setError("OTP is required.");
-      return;
-    } else if (otp.length < 4) {
-      setError("Enter a valid OTP.");
-      return;
-    }
-    // Simulate verification
-    setError("");
-    alert("Email verified!");
-    navigate("/login");
-  }
+      function handleVerify(e) {
+            e.preventDefault();
+            setError("");
+            if (!otp) {
+                  setError("OTP is required.");
+                  return;
+            } else if (otp.length < 4) {
+                  setError("Enter a valid OTP.");
+                  return;
+            }
+            // Simulate verification
+            setError("");
+            alert("Email verified!");
+            navigate("/login");
+      }
 
-  function handleResend(e) {
-    e.preventDefault();
-    alert("OTP resent!");
-  }
+      function handleResend(e) {
+            e.preventDefault();
+            alert("OTP resent!");
+      }
 
-  return (
-    <div className="auth-bg min-h-screen w-full flex items-center justify-center relative overflow-hidden">
-      {/* Animated Boiling Bubbles Letters (background) */}
-      <div className="boiling-letters">
-        {floatingLetters.map((letter, i) => (
-          <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
-        ))}
-      </div>
-      {/* Centered Card Form */}
-      <div className="themed-card-form w-full max-w-lg relative z-10">
-        <div className="px-8 py-10 md:px-10 md:py-12">
-          <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Email Verification</h2>
-          <p className="mb-8 text-gray-500 text-base text-center">Enter the OTP sent to your email to verify your account.</p>
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div>
-              <label htmlFor="otp" className="themed-label">OTP</label>
-              <input id="otp" type="text" className={`themed-input${error ? ' input-error' : ''}`} value={otp} onChange={e => setOtp(e.target.value)} required />
-              {error && <span className="error-msg">{error}</span>}
-            </div>
-            <button className="themed-btn w-full mt-2">Verify Email</button>
-          </form>
-          <div className="flex justify-between mt-8 text-sm">
-            <Link to="/login" className="text-indigo-600 hover:underline">Back to Login</Link>
-            <a href="#" className="text-indigo-600 hover:underline" onClick={handleResend}>Resend OTP</a>
-          </div>
-        </div>
-      </div>
-      <style>{`
+      return (
+            <div className="auth-bg min-h-screen w-full flex items-center justify-center relative overflow-hidden">
+                  {/* Animated Boiling Bubbles Letters (background) */}
+                  <div className="boiling-letters">
+                        {floatingLetters.map((letter, i) => (
+                              <span key={i} className={`boil-letter bl-${i}`}>{letter.char}</span>
+                        ))}
+                  </div>
+                  {/* Centered Card Form */}
+                  <div className="themed-card-form w-full max-w-lg relative z-10">
+                        <div className="px-8 py-10 md:px-10 md:py-12">
+                              <h2 className="text-2xl font-bold mb-2 text-indigo-800 text-center">Email Verification</h2>
+                              <p className="mb-8 text-gray-500 text-base text-center">Enter the OTP sent to your email to verify your account.</p>
+                              <form onSubmit={handleVerify} className="space-y-6">
+                                    <div>
+                                          <label htmlFor="otp" className="themed-label">OTP</label>
+                                          <input id="otp" type="text" className={`themed-input${error ? ' input-error' : ''}`} value={otp} onChange={e => setOtp(e.target.value)} required />
+                                          {error && <span className="error-msg">{error}</span>}
+                                    </div>
+                                    <button className="themed-btn w-full mt-2">Verify Email</button>
+                              </form>
+                              <div className="flex justify-between mt-8 text-sm">
+                                    <Link to="/login" className="text-indigo-600 hover:underline">Back to Login</Link>
+                                    <a href="#" className="text-indigo-600 hover:underline" onClick={handleResend}>Resend OTP</a>
+                              </div>
+                        </div>
+                  </div>
+                  <style>{`
         .auth-bg {
           min-height: 100vh;
           width: 100vw;
@@ -214,8 +214,8 @@ const EmailVerification = () => {
           }
         }
       `}</style>
-    </div>
-  );
+            </div>
+      );
 };
 
 export default EmailVerification; 

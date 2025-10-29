@@ -1,13 +1,13 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  FaUser,
-  FaCalendarAlt,
-  FaTicketAlt,
-  FaStar,
-  FaMapMarkerAlt,
-  FaChair,
-  FaArrowRight,
+      FaUser,
+      FaCalendarAlt,
+      FaTicketAlt,
+      FaStar,
+      FaMapMarkerAlt,
+      FaChair,
+      FaArrowRight,
 } from "react-icons/fa";
 import { FaQuoteLeft } from "react-icons/fa";
 import { format } from "date-fns";
@@ -16,393 +16,407 @@ import { getAllPosts } from "../../services/postService";
 // FontAwesome icons (using CDN, so just use <i> tags as in Vue)
 
 const letterPool = [
-  "અ",
-  "ક",
-  "ગ",
-  "પ",
-  "દ", // Gujarati
-  "क",
-  "न",
-  "अ",
-  "र", // Hindi
-  "A",
-  "B",
-  "C",
-  "R", // English
-  "ش",
-  "م",
-  "ل", // Urdu/Arabic
-  "诗",
-  "字", // Chinese
-  "Σ",
-  "Ω", // Greek
-  "א", // Hebrew
-  "क", // Devanagari
-  "م", // Arabic
-  "Ж", // Cyrillic
-  "क", // Hindi
-  "Λ", // Greek
-  "Z", // English
-  "ی", // Persian
-  "क", // Hindi
-  "Δ", // Greek
-  "Ж", // Cyrillic
-  "ش", // Arabic
-  "Ω", // Greek
-  "字", // Chinese
-  "R", // English
-  "λ", // Greek
-  "م", // Arabic
-  "诗", // Chinese
-  "B", // English
-  "α", // Greek
-  "א", // Hebrew
-  "ن", // Arabic
-  "Γ", // Greek
-  "A", // English
-  "ل", // Arabic
-  "Σ", // Greek
-  "Z", // English
-  "Λ", // Greek
-  "α", // Greek
-  "λ", // Greek
-  "Δ", // Greek
+      "અ",
+      "ક",
+      "ગ",
+      "પ",
+      "દ", // Gujarati
+      "क",
+      "न",
+      "अ",
+      "र", // Hindi
+      "A",
+      "B",
+      "C",
+      "R", // English
+      "ش",
+      "م",
+      "ل", // Urdu/Arabic
+      "诗",
+      "字", // Chinese
+      "Σ",
+      "Ω", // Greek
+      "א", // Hebrew
+      "क", // Devanagari
+      "م", // Arabic
+      "Ж", // Cyrillic
+      "क", // Hindi
+      "Λ", // Greek
+      "Z", // English
+      "ی", // Persian
+      "क", // Hindi
+      "Δ", // Greek
+      "Ж", // Cyrillic
+      "ش", // Arabic
+      "Ω", // Greek
+      "字", // Chinese
+      "R", // English
+      "λ", // Greek
+      "م", // Arabic
+      "诗", // Chinese
+      "B", // English
+      "α", // Greek
+      "א", // Hebrew
+      "ن", // Arabic
+      "Γ", // Greek
+      "A", // English
+      "ل", // Arabic
+      "Σ", // Greek
+      "Z", // English
+      "Λ", // Greek
+      "α", // Greek
+      "λ", // Greek
+      "Δ", // Greek
 ];
 
 function getRandomLetters(pool, count) {
-  const arr = [...pool];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, count).map((char) => ({ char }));
+      const arr = [...pool];
+      for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.slice(0, count).map((char) => ({ char }));
 }
 
 const howItWorksSteps = [
-  {
-    icon: <FaUser size={28} color="#6366f1" />,
-    title: "Register",
-    desc: "Create your free account to join the community.",
-  },
-  {
-    icon: <FaCalendarAlt size={28} color="#6366f1" />,
-    title: "Browse Events",
-    desc: "Explore upcoming poetry events and gatherings.",
-  },
-  {
-    icon: <FaTicketAlt size={28} color="#6366f1" />,
-    title: "Buy Ticket",
-    desc: "Secure your spot and get event details instantly.",
-  },
-  {
-    icon: <FaStar size={28} color="#6366f1" />,
-    title: "Attend the Show",
-    desc: "Enjoy live poetry and connect with fellow enthusiasts.",
-  },
+      {
+            icon: <FaUser size={28} color="#6366f1" />,
+            title: "Register",
+            desc: "Create your free account to join the community.",
+      },
+      {
+            icon: <FaCalendarAlt size={28} color="#6366f1" />,
+            title: "Browse Events",
+            desc: "Explore upcoming poetry events and gatherings.",
+      },
+      {
+            icon: <FaTicketAlt size={28} color="#6366f1" />,
+            title: "Buy Ticket",
+            desc: "Secure your spot and get event details instantly.",
+      },
+      {
+            icon: <FaStar size={28} color="#6366f1" />,
+            title: "Attend the Show",
+            desc: "Enjoy live poetry and connect with fellow enthusiasts.",
+      },
 ];
 
 const AppHome = () => {
-  const [events, setEvents] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+      const [events, setEvents] = useState([]);
+      const [posts, setPosts] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [expandedPosts, setExpandedPosts] = useState({});
+      const POST_PREVIEW_CHAR_LIMIT = 250;
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const data = await getAllEvents();
-        // Sort events by date and get the 3 most recent upcoming events
-        const upcomingEvents = data
-          .filter((event) => new Date(event.dateTime) > new Date())
-          .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime))
-          .slice(0, 3);
-        setEvents(upcomingEvents);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || "Failed to fetch events");
-        setLoading(false);
-      }
-    };
-    fetchEvents();
-  }, []);
+      useEffect(() => {
+            const fetchEvents = async () => {
+                  try {
+                        const data = await getAllEvents();
+                        // Sort events by date and get the 3 most recent upcoming events
+                        const upcomingEvents = data
+                              .filter((event) => new Date(event.dateTime) > new Date())
+                              .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime))
+                              .slice(0, 3);
+                        setEvents(upcomingEvents);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || "Failed to fetch events");
+                        setLoading(false);
+                  }
+            };
+            fetchEvents();
+      }, []);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const data = await getAllPosts();
-        console.log("post data :", data );
+      useEffect(() => {
+            const fetchPosts = async () => {
+                  try {
+                        const data = await getAllPosts();
+                        console.log("post data :", data);
 
-        const postData = data.posts;
-        console.log("this is data.posts :", postData);
+                        const postData = data.posts;
+                        console.log("this is data.posts :", postData);
 
-        const featuredPost = postData
-          .sort(() => 0.5 - Math.random()) // shuffle array
-          .slice(0, 3);
-        setPosts(featuredPost);
-        console.log("featuredPost :", featuredPost);
-        console.log("final Posts :", posts);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || "Failed to fetch posts");
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+                        const featuredPost = postData
+                              .sort(() => 0.5 - Math.random()) // shuffle array
+                              .slice(0, 3);
+                        setPosts(featuredPost);
+                        console.log("featuredPost :", featuredPost);
+                        console.log("final Posts :", posts);
+                        setLoading(false);
+                  } catch (err) {
+                        setError(err.message || "Failed to fetch posts");
+                        setLoading(false);
+                  }
+            };
+            fetchPosts();
+      }, []);
 
-  // Memoize so the letters don't change on every render
-  const floatingLetters = useMemo(() => getRandomLetters(letterPool, 24), []);
+      // Memoize so the letters don't change on every render
+      const floatingLetters = useMemo(() => getRandomLetters(letterPool, 24), []);
 
-  return (
-    <>
-      {/* HERO SECTION */}
-      <section className="hero-bg relative overflow-hidden flex items-center min-h-screen">
-        {/* Background Image (right, high quality, gradient mask) */}
-        <div className="hero-bg-img"></div>
-        <div className="hero-bg-gradient"></div>
-        {/* Boiling Letters Animation */}
-        <div className="boiling-letters">
-          {floatingLetters.map((letter, i) => (
-            <span key={i} className={`boil-letter bl-${i}`}>
-              {letter.char}
-            </span>
-          ))}
-        </div>
-        <div className="container mx-auto flex flex-col items-start justify-center gap-10 py-28 px-6 md:px-16 relative z-10">
-          {/* Hero Text */}
-          <div className="max-w-2xl">
-            <h1 className="hero-headline">
-              Where Poetry Comes Alive in Rajkot
-              <span className="hero-underline"></span>
-            </h1>
-            <p className="hero-subtext">
-              Discover exceptional poetry events, connect with talented poets,
-              and immerse yourself in the beauty of words. The vocie of rajkot
-              platform brings poetry enthusiasts together.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
-              <Link to="/events">
-                <button className="hero-btn-3d">Explore Events</button>
-              </Link>
-              <Link to="/artists">
-                <button className="hero-btn-3d hero-btn-outline-3d">
-                  Meet Our Poets
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Wavy SVG Bottom */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
-          <svg
-            viewBox="0 0 1440 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-28 md:h-32"
-          >
-            <path
-              d="M0,60 C360,140 1080,0 1440,80 L1440,120 L0,120 Z"
-              fill="url(#fade)"
-            />
-            <defs>
-              <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#fff" stopOpacity="1" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-      </section>
+      return (
+            <>
+                  {/* HERO SECTION */}
+                  <section className="hero-bg relative overflow-hidden flex items-center min-h-screen">
+                        {/* Background Image (right, high quality, gradient mask) */}
+                        <div className="hero-bg-img"></div>
+                        <div className="hero-bg-gradient"></div>
+                        {/* Boiling Letters Animation */}
+                        <div className="boiling-letters">
+                              {floatingLetters.map((letter, i) => (
+                                    <span key={i} className={`boil-letter bl-${i}`}>
+                                          {letter.char}
+                                    </span>
+                              ))}
+                        </div>
+                        <div className="container mx-auto flex flex-col items-start justify-center gap-10 py-28 px-6 md:px-16 relative z-10">
+                              {/* Hero Text */}
+                              <div className="max-w-2xl">
+                                    <h1 className="hero-headline">
+                                          Where Poetry Comes Alive in Rajkot
+                                          <span className="hero-underline"></span>
+                                    </h1>
+                                    <p className="hero-subtext">
+                                          Discover exceptional poetry events, connect with talented poets,
+                                          and immerse yourself in the beauty of words. The vocie of rajkot
+                                          platform brings poetry enthusiasts together.
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
+                                          <Link to="/events">
+                                                <button className="hero-btn-3d">Explore Events</button>
+                                          </Link>
+                                          <Link to="/artists">
+                                                <button className="hero-btn-3d hero-btn-outline-3d">
+                                                      Meet Our Poets
+                                                </button>
+                                          </Link>
+                                    </div>
+                              </div>
+                        </div>
+                        {/* Wavy SVG Bottom */}
+                        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
+                              <svg
+                                    viewBox="0 0 1440 120"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-full h-28 md:h-32"
+                              >
+                                    <path
+                                          d="M0,60 C360,140 1080,0 1440,80 L1440,120 L0,120 Z"
+                                          fill="url(#fade)"
+                                    />
+                                    <defs>
+                                          <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2" />
+                                                <stop offset="100%" stopColor="#fff" stopOpacity="1" />
+                                          </linearGradient>
+                                    </defs>
+                              </svg>
+                        </div>
+                  </section>
 
-      {/* UPCOMING EVENTS SECTION */}
-      <section className="events-tile-section">
-        <div className="events-tile-header flex flex-col md:flex-row md:items-center md:justify-between mb-8 px-4 md:px-12 gap-4 md:gap-0">
-          <div className="flex flex-col items-start">
-            <h2 className="events-tile-title events-tile-title-enhanced">
-              Upcoming Events
-            </h2>
-            <div className="events-tile-title-underline"></div>
-            <div className="events-tile-subheading">
-              Don't miss the next poetry gatherings in Rajkot. Reserve your seat
-              now!
-            </div>
-          </div>
-          <Link to="/events">
-            <button className="events-tile-explore-btn events-tile-explore-btn-enhanced">
-              Explore All Events <i className="fa fa-arrow-right ml-2"></i>
-            </button>
-          </Link>
-        </div>
-        <div className="events-tile-header-divider"></div>
-        <div className="events-tile-carousel-wrap relative">
-          <div className="events-tile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-6xl px-4 md:px-0">
-            {events.map((event) => (
-              <div
-                key={event._id}
-                className="event-tile-item group relative w-full"
-              >
-                <div className="event-tile-img-wrap relative">
-                  <img
-                    src={
-                      event.coverImage ||
-                      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
-                    }
-                    alt={event.name}
-                    className="event-tile-img event-tile-img-taller"
-                  />
-                  <div className="event-tile-img-fade-short"></div>
-                  <div className="event-tile-date-badge">
-                    <FaCalendarAlt className="mr-1" />{" "}
-                    {format(new Date(event.dateTime), "dd MMM yyyy, h:mm a")}
-                  </div>
-                  <div className="event-tile-img-title">{event.name}</div>
-                </div>
-                <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
-                  <p className="event-tile-desc mb-2">{event.description}</p>
-                  <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
-                    <span className="flex items-center gap-1">
-                      <FaMapMarkerAlt /> {event.venue}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
-                    </span>
-                  </div>
-                  <div className="event-tile-progress-wrap mt-2 mb-3">
-                    <div className="event-tile-progress-bg">
-                      <div
-                        className="event-tile-progress-fill"
-                        style={{
-                          width: `${Math.round(
-                            (event.bookedSeats / event.totalSeats) * 100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <span className="event-tile-progress-label">
-                      {Math.round((event.bookedSeats / event.totalSeats) * 100)}
-                      % booked
-                    </span>
-                  </div>
-                  <Link
-                    to={`/events/${event._id}`}
-                    className="event-tile-details-btn-wrap mt-2"
-                  >
-                    <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
-                      More Details <FaArrowRight />
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                  {/* UPCOMING EVENTS SECTION */}
+                  <section className="events-tile-section">
+                        <div className="events-tile-header flex flex-col md:flex-row md:items-center md:justify-between mb-8 px-4 md:px-12 gap-4 md:gap-0">
+                              <div className="flex flex-col items-start">
+                                    <h2 className="events-tile-title events-tile-title-enhanced">
+                                          Upcoming Events
+                                    </h2>
+                                    <div className="events-tile-title-underline"></div>
+                                    <div className="events-tile-subheading">
+                                          Don't miss the next poetry gatherings in Rajkot. Reserve your seat
+                                          now!
+                                    </div>
+                              </div>
+                              <Link to="/events">
+                                    <button className="events-tile-explore-btn events-tile-explore-btn-enhanced">
+                                          Explore All Events <i className="fa fa-arrow-right ml-2"></i>
+                                    </button>
+                              </Link>
+                        </div>
+                        <div className="events-tile-header-divider"></div>
+                        <div className="events-tile-carousel-wrap relative">
+                              <div className="events-tile-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-6xl px-4 md:px-0">
+                                    {events.map((event) => (
+                                          <div
+                                                key={event._id}
+                                                className="event-tile-item group relative w-full"
+                                          >
+                                                <div className="event-tile-img-wrap relative">
+                                                      <img
+                                                            src={
+                                                                  event.coverImage ||
+                                                                  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+                                                            }
+                                                            alt={event.name}
+                                                            className="event-tile-img event-tile-img-taller"
+                                                      />
+                                                      <div className="event-tile-img-fade-short"></div>
+                                                      <div className="event-tile-date-badge">
+                                                            <FaCalendarAlt className="mr-1" />{" "}
+                                                            {format(new Date(event.dateTime), "dd MMM yyyy, h:mm a")}
+                                                      </div>
+                                                      <div className="event-tile-img-title">{event.name}</div>
+                                                </div>
+                                                <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
+                                                      <p className="event-tile-desc mb-2">{event.description}</p>
+                                                      <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
+                                                            <span className="flex items-center gap-1">
+                                                                  <FaMapMarkerAlt /> {event.venue}
+                                                            </span>
+                                                            <span className="flex items-center gap-1">
+                                                                  <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
+                                                            </span>
+                                                      </div>
+                                                      <div className="event-tile-progress-wrap mt-2 mb-3">
+                                                            <div className="event-tile-progress-bg">
+                                                                  <div
+                                                                        className="event-tile-progress-fill"
+                                                                        style={{
+                                                                              width: `${Math.round(
+                                                                                    (event.bookedSeats / event.totalSeats) * 100
+                                                                              )}%`,
+                                                                        }}
+                                                                  ></div>
+                                                            </div>
+                                                            <span className="event-tile-progress-label">
+                                                                  {Math.round((event.bookedSeats / event.totalSeats) * 100)}
+                                                                  % booked
+                                                            </span>
+                                                      </div>
+                                                      <Link
+                                                            to={`/events/${event._id}`}
+                                                            className="event-tile-details-btn-wrap mt-2"
+                                                      >
+                                                            <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
+                                                                  More Details <FaArrowRight />
+                                                            </button>
+                                                      </Link>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
+                  </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <section className="howitworks-section-gradient relative py-32 px-4 md:px-0 overflow-hidden">
-        <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="howitworks-header flex flex-col justify-start text-left mb-20">
-            <h2 className="howitworks-title-pro text-4xl md:text-5xl mb-6">
-              How It Works
-            </h2>
-            <div className="howitworks-title-underline-pro howitworks-title-underline-animated"></div>
-            <p className="howitworks-subtitle-pro text-gray-600 max-w-2xl mt-6">
-              Discover the seamless journey from inspiration to performance
-            </p>
-          </div>
+                  {/* HOW IT WORKS SECTION */}
+                  <section className="howitworks-section-gradient relative py-32 px-4 md:px-0 overflow-hidden">
+                        <div className="container mx-auto max-w-6xl relative z-10">
+                              <div className="howitworks-header flex flex-col justify-start text-left mb-20">
+                                    <h2 className="howitworks-title-pro text-4xl md:text-5xl mb-6">
+                                          How It Works
+                                    </h2>
+                                    <div className="howitworks-title-underline-pro howitworks-title-underline-animated"></div>
+                                    <p className="howitworks-subtitle-pro text-gray-600 max-w-2xl mt-6">
+                                          Discover the seamless journey from inspiration to performance
+                                    </p>
+                              </div>
 
-          <div className="howitworks-steps flex flex-col md:flex-row gap-6 flex-wrap justify-center">
-            {howItWorksSteps.map((step, idx) => (
-              <div
-                key={idx}
-                className="step-card group w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 relative"
-              >
-                <div className={`step-number w-20 h-20 flex items-center justify-center rotate-12 bg-indigo-50 rounded-full z-2 left-1/2`}>
-                  <span className="text-4xl font-bold text-indigo-200 -rotate-12">
-                    {idx + 1}
-                  </span>
-                </div>
+                              <div className="howitworks-steps flex flex-col md:flex-row gap-6 flex-wrap justify-center">
+                                    {howItWorksSteps.map((step, idx) => (
+                                          <div
+                                                key={idx}
+                                                className="step-card group w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 relative"
+                                          >
+                                                <div className={`step-number w-20 h-20 flex items-center justify-center rotate-12 bg-indigo-50 rounded-full z-2 left-1/2`}>
+                                                      <span className="text-4xl font-bold text-indigo-200 -rotate-12">
+                                                            {idx + 1}
+                                                      </span>
+                                                </div>
 
-                <div className="step-icon-container relative mb-8 mx-auto">
-                  <div className="step-icon-bg w-16 h-16 flex items-center justify-center bg-indigo-50 rounded-2xl relative z-10 group-hover:bg-indigo-100 transition-all duration-300">
-                    {step.icon}
-                  </div>
-                  <div className="step-icon-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-indigo-500 opacity-0 group-hover:opacity-10 blur-2xl transition-all duration-300"></div>
-                </div>
+                                                <div className="step-icon-container relative mb-8 mx-auto">
+                                                      <div className="step-icon-bg w-16 h-16 flex items-center justify-center bg-indigo-50 rounded-2xl relative z-10 group-hover:bg-indigo-100 transition-all duration-300">
+                                                            {step.icon}
+                                                      </div>
+                                                      <div className="step-icon-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-indigo-500 opacity-0 group-hover:opacity-10 blur-2xl transition-all duration-300"></div>
+                                                </div>
 
-                <div className="step-content relative z-10">
-                  <h3 className="step-title text-2xl font-bold mb-4 text-gray-800 group-hover:text-indigo-600 transition-colors duration-300 text-center">
-                    {step.title}
-                  </h3>
-                  <p className="step-description text-gray-600 leading-relaxed text-center">
-                    {step.desc}
-                  </p>
-                </div>
+                                                <div className="step-content relative z-10">
+                                                      <h3 className="step-title text-2xl font-bold mb-4 text-gray-800 group-hover:text-indigo-600 transition-colors duration-300 text-center">
+                                                            {step.title}
+                                                      </h3>
+                                                      <p className="step-description text-gray-600 leading-relaxed text-center">
+                                                            {step.desc}
+                                                      </p>
+                                                </div>
 
-                <div className="decorative-line absolute bottom-0 left-0 rounded-b-2xl w-full h-1 bg-gradient-to-r from-indigo-500 to-indigo-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </div>
-            ))}
-          </div>
-        </div>
+                                                <div className="decorative-line absolute bottom-0 left-0 rounded-b-2xl w-full h-1 bg-gradient-to-r from-indigo-500 to-indigo-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
 
-        {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-          <div className="absolute top-20 left-0 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute top-40 right-0 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-        </div>
-      </section>
+                        {/* Background decoration */}
+                        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                              <div className="absolute top-20 left-0 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                              <div className="absolute top-40 right-0 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                              <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                        </div>
+                  </section>
 
-      {/* FEATURED POSTS SECTION */}
-      <section className="featured-posts-section-pro py-24 px-4 md:px-0">
-        <div className="container mx-auto max-w-6xl">
-          <div className="featured-posts-header-pro flex flex-col items-start mb-14">
-            <h2 className="featured-posts-title-pro">Featured Posts</h2>
-            <div className="featured-posts-title-underline-pro"></div>
-            <div className="featured-posts-subheading-pro">
-              Discover the latest poems and phrases from our talented poets and
-              writers.
-            </div>
-          </div>
-           <div className="featured-posts-grid-pro grid grid-cols-1 md:grid-cols-3 gap-10">
-            {posts.map((post) => (
-              <div
-              key={post._id}
-              className="featured-poem-card-pro group flex flex-col justify-between relative"
-              >
-                {console.log("this.post", post)}
-                <span className="featured-poem-quote-icon-pro">
-                  <FaQuoteLeft />
-                </span>
-                <div className="featured-poem-phrase-pro mb-8">
-                  <p className="featured-poem-phrase-text-pro">
-                    {post.content}
-                  </p>
-                  <span className="featured-poem-underline-pro"></span>
-                </div>
-                <div className="featured-poem-divider-pro"></div>
-                <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
-                  <img
-                    className="featured-poem-author-img-pro"
-                    src={`https://randomuser.me/api/portraits/men/${post._id}.jpg`}
-                    alt="Poet"
-                  />
-                  <div className="flex flex-col">
-                    {/* <span className="featured-poem-author-name-pro">
+                  {/* FEATURED POSTS SECTION */}
+                  <section className="featured-posts-section-pro py-24 px-4 md:px-0">
+                        <div className="container mx-auto max-w-6xl">
+                              <div className="featured-posts-header-pro flex flex-col items-start mb-14">
+                                    <h2 className="featured-posts-title-pro">Featured Posts</h2>
+                                    <div className="featured-posts-title-underline-pro"></div>
+                                    <div className="featured-posts-subheading-pro">
+                                          Discover the latest poems and phrases from our talented poets and
+                                          writers.
+                                    </div>
+                              </div>
+                              <div className="featured-posts-grid-pro columns-1 md:columns-2 lg:columns-3 gap-10">
+                                    {posts.map((post) => (
+                                          <div
+                                                key={post._id}
+                                                className="featured-poem-card-pro group flex flex-col justify-between relative mb-10 inline-block w-full"
+                                                style={{ breakInside: 'avoid-column' }}
+                                          >
+                                                <span className="featured-poem-quote-icon-pro">
+                                                      <FaQuoteLeft />
+                                                </span>
+                                                <div className="featured-poem-phrase-pro mb-8">
+                                                      <p className="featured-poem-phrase-text-pro text-base whitespace-pre-wrap break-words">
+                                                            {expandedPosts[post._id] ? post.content :
+                                                                  (post.content?.length > POST_PREVIEW_CHAR_LIMIT ?
+                                                                        `${post.content.slice(0, POST_PREVIEW_CHAR_LIMIT)}...` :
+                                                                        post.content)
+                                                            }
+                                                      </p>
+                                                      {post.content?.length > POST_PREVIEW_CHAR_LIMIT && (
+                                                            <button
+                                                                  onClick={() => setExpandedPosts(prev => ({ ...prev, [post._id]: !prev[post._id] }))}
+                                                                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium mt-2"
+                                                            >
+                                                                  {expandedPosts[post._id] ? 'Show less' : 'Show more'}
+                                                            </button>
+                                                      )}
+                                                      <span className="featured-poem-underline-pro"></span>
+                                                </div>
+                                                <div className="featured-poem-divider-pro"></div>
+                                                <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
+                                                      <img
+                                                            className="featured-poem-author-img-pro"
+                                                            src={`https://randomuser.me/api/portraits/men/${post._id}.jpg`}
+                                                            alt="Poet"
+                                                      />
+                                                      <div className="flex flex-col">
+                                                            {/* <span className="featured-poem-author-name-pro">
                       Poet Name {post.author.name}
                     </span> */}
-                    <span className="featured-poem-author-role-pro">
-                      Poet & Writer
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div> 
-        </div>
-      </section>
+                                                            <span className="featured-poem-author-role-pro">
+                                                                  Poet & Writer
+                                                            </span>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
+                  </section>
 
-      <style>{`
+                  <style>{`
         .hero-bg {
   background: linear-gradient(120deg, #6366f1 0%, #818cf8 100%);
   position: relative;
@@ -2010,8 +2024,8 @@ const AppHome = () => {
   }
 
       `}</style>
-    </>
-  );
+            </>
+      );
 };
 
 export default AppHome;

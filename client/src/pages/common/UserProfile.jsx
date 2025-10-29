@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaChair,
-  FaArrowRight,
-  FaQuoteLeft
+      FaCalendarAlt,
+      FaMapMarkerAlt,
+      FaChair,
+      FaArrowRight,
+      FaQuoteLeft
 } from "react-icons/fa";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -14,187 +14,187 @@ import { getPostsByAuthor } from "../../services/postService";
 import { getEventsByPerformer } from "../../services/eventService";
 
 const UserProfile = () => {
-  const { id } = useParams();
-  console.log("id", id);
-  const [artist, setArtist] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("poetry"); // Add this line
+      const { id } = useParams();
+      console.log("id", id);
+      const [artist, setArtist] = useState(null);
+      const [posts, setPosts] = useState([]);
+      const [events, setEvents] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [activeTab, setActiveTab] = useState("poetry"); // Add this line
 
-  useEffect(() => {
-    const fetchArtistData = async () => {
-      try {
-        const [userData, postsData, eventsData] = await Promise.all([
-          getArtistProfile(id), // Changed from getUserProfile to getArtistProfile
-          getPostsByAuthor(id),
-          getEventsByPerformer(id),
-        ]);
-        setArtist(userData);
-        setPosts(postsData.posts);
-        setEvents(eventsData.events);
-        setLoading(false);
-        console.log("userData", userData);
-        console.log("postsData", postsData);
-        console.log("eventsData", eventsData);
-      } catch (err) {
-        setError(err.message || "Failed to fetch artist data");
-        setLoading(false);
+      useEffect(() => {
+            const fetchArtistData = async () => {
+                  try {
+                        const [userData, postsData, eventsData] = await Promise.all([
+                              getArtistProfile(id), // Changed from getUserProfile to getArtistProfile
+                              getPostsByAuthor(id),
+                              getEventsByPerformer(id),
+                        ]);
+                        setArtist(userData);
+                        setPosts(postsData.posts);
+                        setEvents(eventsData.events);
+                        setLoading(false);
+                        console.log("userData", userData);
+                        console.log("postsData", postsData);
+                        console.log("eventsData", eventsData);
+                  } catch (err) {
+                        setError(err.message || "Failed to fetch artist data");
+                        setLoading(false);
+                  }
+            };
+            fetchArtistData();
+      }, [id]);
+
+      if (loading) {
+            return <div className="text-center py-10">Loading profile...</div>;
       }
-    };
-    fetchArtistData();
-  }, [id]);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading profile...</div>;
-  }
+      if (error || !artist) {
+            return (
+                  <section className="artist-profile-section">
+                        <div className="text-center text-lg text-red-600 mt-20">
+                              {error || "Artist not found."}
+                        </div>
+                  </section>
+            );
+      }
 
-  if (error || !artist) {
-    return (
-      <section className="artist-profile-section">
-        <div className="text-center text-lg text-red-600 mt-20">
-          {error || "Artist not found."}
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="artist-profile-section">
-      <div className="artist-profile-header mb-10 px-4 md:px-12">
-        <h2 className="artist-profile-title">Artist Profile</h2>
-        <div className="artist-profile-title-underline artist-profile-title-underline-animated"></div>
-        <div className="artist-profile-subheading">
-          Discover the journey and works of this talented artist
-        </div>
-      </div>
-      <div className="events-tile-header-divider"></div>
-      {/* Wide Profile Card */}
-      <div className="artist-profile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 max-w-6xl mx-auto mb-14">
-        <div className="artist-accent-bar"></div>
-        {/* Photo Section - Left Side */}
-        <div className="artist-profile-photo-section w-full md:w-1/3 relative overflow-hidden">
-          <img
-            src={artist.photo}
-            alt={artist.name}
-            className="artist-profile-photo w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-        {/* Details Section - Right Side */}
-        <div className="artist-profile-details-section w-full md:w-2/3 p-8 md:p-12">
-          <div className="flex flex-col h-full justify-between">
-            <div>
-              <h3 className="artist-profile-name text-3xl font-bold text-indigo-800 mb-4">
-                {artist.name}
-              </h3>
-              <div className="artist-profile-tags flex flex-wrap gap-3 mb-6">
-                {artist.profileTags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="artist-profile-tag bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full text-base"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <p className="artist-profile-bio text-gray-600 mb-6 text-lg leading-relaxed">
-                {artist.oneLineDesc}
-              </p>
-            </div>
-
-            <div className="artist-profile-about-block bg-gray-50 border border-gray-200 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <div className="about-icon bg-indigo-100 rounded-full p-3 flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 text-indigo-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg text-gray-800 mb-2">
-                    About
-                  </h4>
-                  <p className="text-gray-600 text-base leading-relaxed">
-                    {artist.workDescription}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Poetry Collection */}
-
-      <div className="max-w-6xl mx-auto px-4 md:px-0">
-        <div className="events-tile-header">
-          <h3 className="poetry-section-title">My Upcoming Events</h3>
-          <div className="poetry-section-title-underline"></div>
-        </div>
-        <div className="events-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
-          {events.map((event) => (
-            <div
-                key={event._id}
-                className="event-tile-item group relative w-full"
-              >
-                <div className="event-tile-img-wrap relative">
-                  <img
-                    src={event.coverImage || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
-                    alt={event.title}
-                    className="event-tile-img event-tile-img-taller"
-                  />
-                  <div className="event-tile-img-fade-short"></div>
-                  <div className="event-tile-date-badge">
-                    <FaCalendarAlt className="mr-1" /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}
+      return (
+            <section className="artist-profile-section">
+                  <div className="artist-profile-header mb-10 px-4 md:px-12">
+                        <h2 className="artist-profile-title">Artist Profile</h2>
+                        <div className="artist-profile-title-underline artist-profile-title-underline-animated"></div>
+                        <div className="artist-profile-subheading">
+                              Discover the journey and works of this talented artist
+                        </div>
                   </div>
-                  <div className="event-tile-img-title">{event.name}</div>
-                </div>
-                <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
-                  <p className="event-tile-desc mb-2">{event.description}</p>
-                  <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
-                    <span className="flex items-center gap-1">
-                      <FaMapMarkerAlt /> {event.venue}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
-                    </span>
+                  <div className="events-tile-header-divider"></div>
+                  {/* Wide Profile Card */}
+                  <div className="artist-profile-maincard group relative overflow-hidden flex flex-col md:flex-row p-0 border border-[#e0e7ff] rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 max-w-6xl mx-auto mb-14">
+                        <div className="artist-accent-bar"></div>
+                        {/* Photo Section - Left Side */}
+                        <div className="artist-profile-photo-section w-full md:w-1/3 relative overflow-hidden">
+                              <img
+                                    src={artist.photo}
+                                    alt={artist.name}
+                                    className="artist-profile-photo w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                        </div>
+                        {/* Details Section - Right Side */}
+                        <div className="artist-profile-details-section w-full md:w-2/3 p-8 md:p-12">
+                              <div className="flex flex-col h-full justify-between">
+                                    <div>
+                                          <h3 className="artist-profile-name text-3xl font-bold text-indigo-800 mb-4">
+                                                {artist.name}
+                                          </h3>
+                                          <div className="artist-profile-tags flex flex-wrap gap-3 mb-6">
+                                                {artist.profileTags.map((tag) => (
+                                                      <span
+                                                            key={tag}
+                                                            className="artist-profile-tag bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-full text-base"
+                                                      >
+                                                            {tag}
+                                                      </span>
+                                                ))}
+                                          </div>
+                                          <p className="artist-profile-bio text-gray-600 mb-6 text-lg leading-relaxed">
+                                                {artist.oneLineDesc}
+                                          </p>
+                                    </div>
+
+                                    <div className="artist-profile-about-block bg-gray-50 border border-gray-200 rounded-xl p-6">
+                                          <div className="flex items-start gap-4">
+                                                <div className="about-icon bg-indigo-100 rounded-full p-3 flex-shrink-0">
+                                                      <svg
+                                                            className="w-5 h-5 text-indigo-600"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                      >
+                                                            <path
+                                                                  strokeLinecap="round"
+                                                                  strokeLinejoin="round"
+                                                                  strokeWidth={2}
+                                                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                            />
+                                                      </svg>
+                                                </div>
+                                                <div>
+                                                      <h4 className="font-semibold text-lg text-gray-800 mb-2">
+                                                            About
+                                                      </h4>
+                                                      <p className="text-gray-600 text-base leading-relaxed">
+                                                            {artist.workDescription}
+                                                      </p>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
                   </div>
-                  <div className="event-tile-progress-wrap mt-2 mb-3">
-                    <div className="event-tile-progress-bg">
-                      <div
-                        className="event-tile-progress-fill"
-                        style={{ width: `${(event.bookedSeats / event.totalSeats) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="event-tile-progress-label">
-                      {Math.round((event.bookedSeats / event.totalSeats) * 100)}% booked
-                    </span>
+                  {/* Poetry Collection */}
+
+                  <div className="max-w-6xl mx-auto px-4 md:px-0">
+                        <div className="events-tile-header">
+                              <h3 className="poetry-section-title">My Upcoming Events</h3>
+                              <div className="poetry-section-title-underline"></div>
+                        </div>
+                        <div className="events-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
+                              {events.map((event) => (
+                                    <div
+                                          key={event._id}
+                                          className="event-tile-item group relative w-full"
+                                    >
+                                          <div className="event-tile-img-wrap relative">
+                                                <img
+                                                      src={event.coverImage || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"}
+                                                      alt={event.title}
+                                                      className="event-tile-img event-tile-img-taller"
+                                                />
+                                                <div className="event-tile-img-fade-short"></div>
+                                                <div className="event-tile-date-badge">
+                                                      <FaCalendarAlt className="mr-1" /> {format(new Date(event.dateTime), 'dd MMM yyyy, h:mm a')}
+                                                </div>
+                                                <div className="event-tile-img-title">{event.name}</div>
+                                          </div>
+                                          <div className="event-tile-content event-tile-content-gradient rounded-b-[16px] px-7 pt-4 pb-6 flex flex-col gap-3 relative border border-[#e0e7ff]">
+                                                <p className="event-tile-desc mb-2">{event.description}</p>
+                                                <div className="event-tile-meta flex items-center gap-6 text-xs text-gray-500 mt-1 mb-2">
+                                                      <span className="flex items-center gap-1">
+                                                            <FaMapMarkerAlt /> {event.venue}
+                                                      </span>
+                                                      <span className="flex items-center gap-1">
+                                                            <FaChair /> {event.bookedSeats} / {event.totalSeats} seats
+                                                      </span>
+                                                </div>
+                                                <div className="event-tile-progress-wrap mt-2 mb-3">
+                                                      <div className="event-tile-progress-bg">
+                                                            <div
+                                                                  className="event-tile-progress-fill"
+                                                                  style={{ width: `${(event.bookedSeats / event.totalSeats) * 100}%` }}
+                                                            ></div>
+                                                      </div>
+                                                      <span className="event-tile-progress-label">
+                                                            {Math.round((event.bookedSeats / event.totalSeats) * 100)}% booked
+                                                      </span>
+                                                </div>
+                                                <Link
+                                                      to={`/events/${event._id}`}
+                                                      className="event-tile-details-btn-wrap mt-2"
+                                                >
+                                                      <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
+                                                            More Details <FaArrowRight />
+                                                      </button>
+                                                </Link>
+                                          </div>
+                                    </div>
+                              ))}
+                        </div>
                   </div>
-                  <Link
-                    to={`/events/${event._id}`}
-                    className="event-tile-details-btn-wrap mt-2"
-                  >
-                    <button className="event-tile-details-btn w-full flex items-center justify-center gap-2">
-                      More Details <FaArrowRight />
-                    </button>
-                  </Link>
-                </div>
-              </div>
-          ))}
-        </div>
-      </div>
 
 
-      {/* 
+                  {/* 
 
 POETRY
 
@@ -240,89 +240,89 @@ POETRY
         </div>
       </div>
       */}
-{
+                  {
   /* Display Sample Poetry if available */}
-  {artist.isSampleAdded && artist.sample && (
-    <div className="max-w-6xl mx-auto mt-10 px-4 md:px-0">
-      <h3 className="poetry-section-title">Featured Sample</h3>
-      <div className="poetry-section-title-underline"></div>
-      <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
-        <div className="featured-poem-card-pro group flex flex-col justify-between relative">
-          <span className="featured-poem-quote-icon-pro">
-            <FaQuoteLeft />
-          </span>
-          <div className="featured-poem-phrase-pro mb-8">
-            {artist.sample}
-            <span className="featured-poem-underline-pro"></span>
-          </div>
-          <div className="featured-poem-divider-pro"></div>
-          <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
-            <img
-               className="featured-poem-author-img-pro"
-               src={artist.photo}
-               alt={artist.name}
-             />
-            <div className="flex flex-col">
-              <span className="featured-poem-author-name-pro">
-                {artist.name}
-              </span>
-              <span className="featured-poem-author-role-pro">
-                {artist.profileTags?.join(" & ") || "Poet"}
-              </span>
-            </div>
-            <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">
-              Sample Work
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )}
+                  {artist.isSampleAdded && artist.sample && (
+                        <div className="max-w-6xl mx-auto mt-10 px-4 md:px-0">
+                              <h3 className="poetry-section-title">Featured Sample</h3>
+                              <div className="poetry-section-title-underline"></div>
+                              <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
+                                    <div className="featured-poem-card-pro group flex flex-col justify-between relative">
+                                          <span className="featured-poem-quote-icon-pro">
+                                                <FaQuoteLeft />
+                                          </span>
+                                          <div className="featured-poem-phrase-pro mb-8">
+                                                {artist.sample}
+                                                <span className="featured-poem-underline-pro"></span>
+                                          </div>
+                                          <div className="featured-poem-divider-pro"></div>
+                                          <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
+                                                <img
+                                                      className="featured-poem-author-img-pro"
+                                                      src={artist.photo}
+                                                      alt={artist.name}
+                                                />
+                                                <div className="flex flex-col">
+                                                      <span className="featured-poem-author-name-pro">
+                                                            {artist.name}
+                                                      </span>
+                                                      <span className="featured-poem-author-role-pro">
+                                                            {artist.profileTags?.join(" & ") || "Poet"}
+                                                      </span>
+                                                </div>
+                                                <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">
+                                                      Sample Work
+                                                </span>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+                  )}
 
-  {/* Display Regular Poetry Collection */}
-  {posts.count > 0 ? (
-    <div className="max-w-6xl mx-auto mt-10 px-4 md:px-0">
-      <h3 className="poetry-section-title">Poetry Collection</h3>
-      <div className="poetry-section-title-underline"></div>
-      <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
-        {posts.map((post) => (
-          <div
-            key={post._id}
-            className="featured-poem-card-pro group flex flex-col justify-between relative"
-          >
-            <span className="featured-poem-quote-icon-pro">
-              <FaQuoteLeft />
-            </span>
-            <div className="featured-poem-phrase-pro mb-8">
-              {post.content}
-              <span className="featured-poem-underline-pro"></span>
-            </div>
-            <div className="featured-poem-divider-pro"></div>
-            <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
-              <img
-                 className="featured-poem-author-img-pro"
-                 src={artist.photo}
-                 alt={artist.name}
-               />
-              <div className="flex flex-col">
-                <span className="featured-poem-author-name-pro">
-                  {artist.name}
-                </span>
-                <span className="featured-poem-author-role-pro">
-                  {artist.profileTags?.join(" & ") || "Poet"}
-                </span>
-              </div>
-              <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">
-                {new Date(post.createdAt).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  ) : null}
-      {/* Add these styles to your existing style tag */}
-      <style jsx>{`
+                  {/* Display Regular Poetry Collection */}
+                  {posts.count > 0 ? (
+                        <div className="max-w-6xl mx-auto mt-10 px-4 md:px-0">
+                              <h3 className="poetry-section-title">Poetry Collection</h3>
+                              <div className="poetry-section-title-underline"></div>
+                              <div className="poetry-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-8">
+                                    {posts.map((post) => (
+                                          <div
+                                                key={post._id}
+                                                className="featured-poem-card-pro group flex flex-col justify-between relative"
+                                          >
+                                                <span className="featured-poem-quote-icon-pro">
+                                                      <FaQuoteLeft />
+                                                </span>
+                                                <div className="featured-poem-phrase-pro mb-8">
+                                                      {post.content}
+                                                      <span className="featured-poem-underline-pro"></span>
+                                                </div>
+                                                <div className="featured-poem-divider-pro"></div>
+                                                <div className="featured-poem-author-row-pro flex items-center gap-3 mt-auto pt-4">
+                                                      <img
+                                                            className="featured-poem-author-img-pro"
+                                                            src={artist.photo}
+                                                            alt={artist.name}
+                                                      />
+                                                      <div className="flex flex-col">
+                                                            <span className="featured-poem-author-name-pro">
+                                                                  {artist.name}
+                                                            </span>
+                                                            <span className="featured-poem-author-role-pro">
+                                                                  {artist.profileTags?.join(" & ") || "Poet"}
+                                                            </span>
+                                                      </div>
+                                                      <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">
+                                                            {new Date(post.createdAt).toLocaleDateString()}
+                                                      </span>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        </div>
+                  ) : null}
+                  {/* Add these styles to your existing style tag */}
+                  <style jsx>{`
         .artist-profile-section {
           background: #f8fafc;
           padding-top: 4.5rem;
@@ -816,8 +816,8 @@ POETRY
           }
         }
       `}</style>
-    </section>
-  );
+            </section>
+      );
 };
 
 export default UserProfile;
