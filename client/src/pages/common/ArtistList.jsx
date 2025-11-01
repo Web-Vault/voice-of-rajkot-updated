@@ -41,7 +41,7 @@ const ArtistList = () => {
                         <div className="events-tile-header-divider"></div>
                         <div className="artists-list-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto px-4 md:px-0">
                               {artists.map((artist) => (
-                                    <div key={artist._id} className="artist-card group relative overflow-hidden flex flex-col items-center p-0 border border-[#e0e7ff] rounded-2xl bg-gradient-to-br from-white via-indigo-50 to-indigo-100 shadow-md hover:shadow-xl transition-all">
+                                    <div key={artist._id} className="artist-card w-100 group relative overflow-hidden flex flex-col items-center p-0 border border-[#e0e7ff] rounded-2xl bg-gradient-to-br from-white via-indigo-50 to-indigo-100 shadow-md hover:shadow-xl transition-all">
                                           <div className="artist-accent-bar"></div>
                                           <div className="flex flex-col items-center w-full pt-8 pb-4 px-7">
                                                 <img

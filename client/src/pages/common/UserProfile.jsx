@@ -267,10 +267,10 @@ POETRY
                                                             {artist.name}
                                                       </span>
                                                       <span className="featured-poem-author-role-pro">
-                                                            {artist.profileTags?.join(" & ") || "Poet"}
+                                                            {artist.profileTags?.join(", ") || "Poet"}
                                                       </span>
                                                 </div>
-                                                <span className="featured-poem-date-pro ml-auto text-xs text-gray-400 font-semibold">
+                                                <span className="featured-poem-date-pro ml-auto text-xs text-center text-gray-400 font-semibold">
                                                       Sample Work
                                                 </span>
                                           </div>

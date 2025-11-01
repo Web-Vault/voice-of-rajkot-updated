@@ -41,7 +41,7 @@ async function testLogin() {
                   headers: {
                         'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({
+                  body: JSON.stringify({  
                         email: testUser.email,
                         password: testUser.password
                   })
