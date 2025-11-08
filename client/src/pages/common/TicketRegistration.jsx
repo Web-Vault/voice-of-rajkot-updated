@@ -7,6 +7,8 @@ import { useAuth } from "../../context/AuthContext";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+
 
 const TicketRegistration = () => {
       const { type, id } = useParams(); // 'audience' or 'performer', event id
@@ -26,6 +28,7 @@ const TicketRegistration = () => {
       const [paymentScreenshot, setPaymentScreenshot] = useState(null);
       const [uploading, setUploading] = useState(false);
       const [uploadError, setUploadError] = useState('');
+      const [isMobile, setIsMobile] = useState(false);
       const ticketRef = useRef(null);
       const fileInputRef = useRef(null);
 
@@ -211,6 +214,11 @@ const TicketRegistration = () => {
                   return;
             }
 
+            if (isMobile) {
+                  toast.success("Hey! Since you're on a mobile device, You can click the QR code to complete your payment.");
+                  
+            }
+
             // Close rules modal and show QR code modal
             setShowRulesModal(false);
             setShowQRModal(true);
@@ -393,6 +401,7 @@ const TicketRegistration = () => {
                               try {
 
                                     const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                                    setIsMobile(isMobile);
 
                                     // Check if QRCode is already loaded
                                     if (typeof window.QRCode === 'undefined') {
@@ -1163,6 +1172,11 @@ canvas {
   user-select: none;
   pointer-events: none;
 }
+
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
+
 
         .ticket-registration-container {
           min-height: 100vh;

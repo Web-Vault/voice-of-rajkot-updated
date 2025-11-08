@@ -26,6 +26,8 @@ import PrivacyPolicy from "./pages/privacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import ShippingPolicy from "./pages/ShippingPolicy";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppRoutes() {
       const location = useLocation();
@@ -63,6 +65,7 @@ function AppRoutes() {
                         {/* Add more routes for other pages here */}
                         <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <ToastContainer position="top-center" autoClose={3000} />
                   {!hideNavbar && <AppFooter />}
             </>
       );
