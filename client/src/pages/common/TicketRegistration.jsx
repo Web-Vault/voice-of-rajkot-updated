@@ -391,6 +391,9 @@ const TicketRegistration = () => {
                         // Load QRCode.js dynamically
                         const loadQRCode = async () => {
                               try {
+
+                                    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
                                     // Check if QRCode is already loaded
                                     if (typeof window.QRCode === 'undefined') {
                                           // Create script element
@@ -421,12 +424,47 @@ const TicketRegistration = () => {
                                           correctLevel: window.QRCode.CorrectLevel.H
                                     });
 
+
+
                                     // Add a subtle animation
                                     qrCodeRef.current.style.opacity = '0';
                                     setTimeout(() => {
                                           qrCodeRef.current.style.transition = 'opacity 0.5s ease-in-out';
                                           qrCodeRef.current.style.opacity = '1';
                                     }, 100);
+
+                                    // 🧩 Hide QR link hover (prevent tooltip/copy/inspect)
+                                    qrCodeRef.current.setAttribute("title", ""); // remove title from container
+
+                                    const qrCanvas = qrCodeRef.current.querySelector("canvas");
+                                    const qrImage = qrCodeRef.current.querySelector("img");
+
+                                    // Common protection function
+                                    const protectQR = (el) => {
+                                          if (!el) return;
+                                          el.setAttribute("title", "");
+                                          el.setAttribute("alt", "");
+                                          el.draggable = false;
+                                          el.style.userSelect = "none";
+                                          el.style.webkitUserDrag = "none";
+                                          el.oncontextmenu = (e) => e.preventDefault(); // disables right-click save
+                                          el.style.pointerEvents = isMobile ? "auto" : "none";
+                                          el.style.cursor = isMobile ? "pointer" : "default";
+                                    };
+
+                                    // Apply to both possible elements
+                                    protectQR(qrCanvas);
+                                    protectQR(qrImage);
+
+                                    // 📱 Make QR clickable only on mobile
+                                    const clickableQR = qrCanvas || qrImage;
+                                    if (isMobile && clickableQR) {
+                                          clickableQR.addEventListener("click", () => {
+                                                window.location.href = upiLink;
+                                          });
+                                    }
+
+
                               } catch (error) {
                                     console.error('Error loading QR code library:', error);
                                     // Fallback display if QR code fails to load
@@ -1120,6 +1158,12 @@ const TicketRegistration = () => {
 
                   {/* Styles */}
                   <style>{`
+canvas {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
         .ticket-registration-container {
           min-height: 100vh;
           background: #f8fafc;
