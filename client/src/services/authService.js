@@ -86,13 +86,59 @@ export const getCurrentUser = () => {
       return userInfo ? JSON.parse(userInfo) : null;
 };
 
+// Request password reset OTP
+export const requestPasswordReset = async (email) => {
+      try {
+            const response = await api.post('/password-reset/request', { email });
+            return response.data;
+      } catch (error) {
+            // Return a generic error to client
+            throw error.response?.data || { success: false, message: 'Failed to request password reset' };
+      }
+};
+
+// Confirm OTP and reset password
+export const confirmPasswordReset = async (email, otp, newPassword) => {
+      try {
+            const response = await api.post('/password-reset/confirm', { email, otp, newPassword });
+            return response.data;
+      } catch (error) {
+            throw error.response?.data || { success: false, message: 'Failed to reset password' };
+      }
+};
+
+// Verify OTP only (two-phase flow)
+export const verifyPasswordReset = async (email, otp) => {
+      try {
+            const response = await api.post('/password-reset/verify', { email, otp });
+            return response.data; // { success, resetToken }
+      } catch (error) {
+            throw error.response?.data || { success: false, message: 'Failed to verify OTP' };
+      }
+};
+
+// Set new password using reset token
+export const setNewPassword = async (resetToken, newPassword) => {
+      try {
+            const response = await api.post('/password-reset/set', { resetToken, newPassword });
+            return response.data;
+      } catch (error) {
+            throw error.response?.data || { success: false, message: 'Failed to set new password' };
+      }
+};
+
+
 const authService = {
       register,
       login,
       logout,
       getUserProfile,
       isAuthenticated,
-      getCurrentUser
+      getCurrentUser,
+       requestPasswordReset,
+      confirmPasswordReset,
+      verifyPasswordReset,
+      setNewPassword
 };
 
 export default authService;

@@ -12,7 +12,8 @@ const RequireAuth = ({ children }) => {
             '/login',
             '/register',
             '/email-verification',
-            '/onboarding'
+            '/onboarding',
+            '/forgot-password'
       ];
 
       // Check if the current path is a public path

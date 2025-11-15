@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, getUserProfile, getAllPerformers, getUserById, updateUserProfile, artistOnboarding, getAllUsers } from '../controllers/authController.js';
+import { register, login, getUserProfile, getAllPerformers, getUserById, updateUserProfile, artistOnboarding, getAllUsers, requestPasswordReset, confirmPasswordReset, verifyPasswordReset, setNewPassword  } from '../controllers/authController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -27,5 +27,11 @@ router.get('/users', protect, getAllUsers);
 
 // Artist onboarding route (protected)
 router.post('/artist-onboarding', protect, artistOnboarding);
+
+// Password reset via OTP
+router.post('/password-reset/request', requestPasswordReset);
+router.post('/password-reset/confirm', confirmPasswordReset);
+router.post('/password-reset/verify', verifyPasswordReset);
+router.post('/password-reset/set', setNewPassword);
 
 export default router;

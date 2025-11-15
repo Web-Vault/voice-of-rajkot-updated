@@ -16,6 +16,7 @@ import AuthLogin from "./pages/auth/AuthLogin";
 import AuthRegister from "./pages/auth/AuthRegister";
 import Onboarding from "./pages/auth/Onboarding";
 import EmailVerification from "./pages/auth/EmailVerification";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import EventDetails from "./pages/common/EventDetails";
 import TicketRegistration from "./pages/common/TicketRegistration";
 import ArtistProfile from "./pages/artist/ArtistProfile";
@@ -33,7 +34,7 @@ function AppRoutes() {
       const location = useLocation();
       // const isArtistDashboard = location.pathname.startsWith("/artist/");
       const hideNavbar = location.pathname.startsWith("/register")
-            || ["/login", "/onboarding", "/email-verification"].includes(location.pathname);
+            || ["/login", "/onboarding", "/email-verification", "/forgot-password"].includes(location.pathname);
       return (
             <>
                   {!hideNavbar && <AppNavbar />}
@@ -48,6 +49,7 @@ function AppRoutes() {
                         <Route path="/register" element={<AuthRegister />} />
                         <Route path="/onboarding" element={<Onboarding />} />
                         <Route path="/email-verification" element={<EmailVerification />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/events/:id" element={<EventDetails />} />
                         <Route path="/register/:type/:id" element={<TicketRegistration />} />
 
