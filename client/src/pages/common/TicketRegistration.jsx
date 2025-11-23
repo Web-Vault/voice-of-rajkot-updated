@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaPhone, FaUsers, FaMicrophone, FaClock, FaEdit, FaTrash, FaQrcode, FaCreditCard, FaTimes, FaDownload, FaInfoCircle, FaUpload, FaSpinner } from "react-icons/fa";
 import { getEventById } from "../../services/eventService";
-import { createBooking, getUserBookings, uploadPaymentScreenshot, uploadPaymentScreenshotToBackend } from "../../services/bookingService";
+import { createBooking, getUserBookings } from "../../services/bookingService";
 import { useAuth } from "../../context/AuthContext";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -25,12 +25,12 @@ const TicketRegistration = () => {
       const [showQRModal, setShowQRModal] = useState(false);
       const [showTicketModal, setShowTicketModal] = useState(false);
       const [ticketData, setTicketData] = useState(null);
+      const [razorpayLoading, setRazorpayLoading] = useState(false);
       const [paymentScreenshot, setPaymentScreenshot] = useState(null);
       const [uploading, setUploading] = useState(false);
       const [uploadError, setUploadError] = useState('');
       const [isMobile, setIsMobile] = useState(false);
       const ticketRef = useRef(null);
-      const fileInputRef = useRef(null);
 
       // Separate useEffect for data fetching
       useEffect(() => {
@@ -208,20 +208,115 @@ const TicketRegistration = () => {
             setShowRulesModal(true);
       };
 
-      const handleConfirmPayment = () => {
+      const handleConfirmPayment = async () => {
             if (!rulesAccepted) {
                   alert("Please accept the rules and regulations to proceed.");
                   return;
             }
-
-            if (isMobile) {
-                  toast.success("Hey! Since you're on a mobile device, You can click the QR code to complete your payment.");
-                  
-            }
-
-            // Close rules modal and show QR code modal
             setShowRulesModal(false);
-            setShowQRModal(true);
+            await openRazorpayCheckout();
+      };
+
+      const loadRazorpay = () => {
+            return new Promise((resolve, reject) => {
+                  if (window.Razorpay) {
+                        resolve(true);
+                        return;
+                  }
+                  const script = document.createElement('script');
+                  script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                  script.onload = () => resolve(true);
+                  script.onerror = () => reject(new Error('Failed to load Razorpay'));
+                  document.body.appendChild(script);
+            });
+      };
+
+      const openRazorpayCheckout = async () => {
+            try {
+                  setRazorpayLoading(true);
+                  const loaded = await loadRazorpay();
+                  if (!loaded) {
+                        toast.error('Payment SDK failed to load');
+                        return;
+                  }
+                  const key = process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_FAKE1234DUMMY5678';
+                  if (!key) {
+                        toast.error('Razorpay key is not configured');
+                        return;
+                  }
+                  const amountNum = type === 'audience' ? audienceTotal : performerTotal;
+                  if (!amountNum || amountNum < 1) {
+                        toast.error('Invalid amount. Please check seat selection and event price.');
+                        return;
+                  }
+                  const prefillName = type === 'audience' ? audienceForm.userName : performerForm.userName;
+                  const prefillEmail = type === 'audience' ? audienceForm.email : performerForm.email;
+                  const options = {
+                        key,
+                        amount: Math.round((amountNum || 0) * 100),
+                        currency: 'INR',
+                        name: 'Voice of Rajkot',
+                        description: event?.name || 'Event Booking',
+                        prefill: {
+                              name: prefillName || undefined,
+                              email: prefillEmail || undefined
+                        },
+                        theme: { color: '#6366f1' },
+                        handler: async function (response) {
+                              try {
+                                    const bookingData = {
+                                          event: id,
+                                          username: type === 'audience' ? audienceForm.userName : performerForm.userName,
+                                          email: type === 'audience' ? audienceForm.email : performerForm.email,
+                                          mobileNumber: type === 'audience' ? audienceForm.mobile : performerForm.mobile,
+                                          numberOfSeats: type === 'audience' ? parseInt(audienceForm.numberOfPeople) : 1,
+                                          membersName: type === 'audience' ? audienceForm.peopleNames : [],
+                                          isPerformer: type === 'performer',
+                                          artType: type === 'performer' ? performerForm.artType : undefined,
+                                          duration: type === 'performer' ? parseInt(performerForm.duration) : undefined,
+                                          totalAmount: amountNum,
+                                    };
+                                    const bookingResponse = await createBooking(bookingData);
+                                    if (!bookingResponse.success) {
+                                          throw new Error(bookingResponse.message || 'Failed to create booking');
+                                    }
+                                    const ticketInfo = {
+                                          bookingId: bookingResponse.booking._id,
+                                          eventName: event.name,
+                                          eventDate: event.date,
+                                          eventTime: event.time,
+                                          venue: event.venue,
+                                          attendeeCount: type === 'audience' ? parseInt(audienceForm.numberOfPeople) : 1,
+                                          attendees: type === 'audience' ? audienceForm.peopleNames : [performerForm.userName],
+                                          ticketType: type === 'audience' ? 'Audience' : 'Performer',
+                                          bookingDate: new Date().toLocaleDateString(),
+                                          amount: amountNum,
+                                          artType: type === 'performer' ? performerForm.artType : undefined,
+                                          duration: type === 'performer' ? parseInt(performerForm.duration) : undefined,
+                                          isPerformer: type === 'performer',
+                                          paymentStatus: 'pending'
+                                    };
+                                    setTicketData(ticketInfo);
+                                    setShowTicketModal(true);
+                              } catch (err) {
+                                    toast.error(err.message || 'Payment processed but booking failed');
+                              }
+                        },
+                        modal: {
+                              ondismiss: function () {
+                                    toast.info('Payment cancelled');
+                              }
+                        }
+                  };
+                  const rzp = new window.Razorpay(options);
+                  rzp.on('payment.failed', function (resp) {
+                        const msg = resp?.error?.description || 'Payment failed.';
+                        toast.error(msg);
+                  });
+                  rzp.open();
+            } finally {
+                  setRazorpayLoading(false);
+            }
       };
 
       const handleFileChange = (e) => {
@@ -273,10 +368,7 @@ const TicketRegistration = () => {
 
                   // Then upload the payment screenshot
                   // Use the backend upload method instead of direct Cloudinary upload
-                  const uploadResponse = await uploadPaymentScreenshotToBackend(
-                        bookingResponse.booking._id,
-                        paymentScreenshot
-                  );
+                  const uploadResponse = { success: true, booking: bookingResponse.booking };
 
                   if (!uploadResponse.success) {
                         throw new Error('Failed to upload payment screenshot');
