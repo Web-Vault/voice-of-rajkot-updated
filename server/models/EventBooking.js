@@ -51,6 +51,9 @@ const eventBookingSchema = new mongoose.Schema({
             type: Number,
             required: true,
       },
+      paymentId: {
+            type: String,
+      },
       createdAt: {
             type: Date,
             default: Date.now,
@@ -88,4 +91,4 @@ eventBookingSchema.pre('save', function (next) {
       next();
 });
 
-export default mongoose.model("EventBooking", eventBookingSchema); 
+export default mongoose.model("EventBooking", eventBookingSchema);

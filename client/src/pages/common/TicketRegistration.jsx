@@ -239,8 +239,8 @@ const TicketRegistration = () => {
                         toast.error('Payment SDK failed to load');
                         return;
                   }
-                  const key = process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_FAKE1234DUMMY5678';
-                  if (!key) {
+                  const api_key = process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag';
+                  if (!api_key) {
                         toast.error('Razorpay key is not configured');
                         return;
                   }
@@ -252,7 +252,7 @@ const TicketRegistration = () => {
                   const prefillName = type === 'audience' ? audienceForm.userName : performerForm.userName;
                   const prefillEmail = type === 'audience' ? audienceForm.email : performerForm.email;
                   const options = {
-                        key,
+                        key: api_key,
                         amount: Math.round((amountNum || 0) * 100),
                         currency: 'INR',
                         name: 'Voice of Rajkot',
@@ -275,6 +275,7 @@ const TicketRegistration = () => {
                                           artType: type === 'performer' ? performerForm.artType : undefined,
                                           duration: type === 'performer' ? parseInt(performerForm.duration) : undefined,
                                           totalAmount: amountNum,
+                                          paymentId: response.razorpay_payment_id
                                     };
                                     const bookingResponse = await createBooking(bookingData);
                                     if (!bookingResponse.success) {
@@ -294,7 +295,7 @@ const TicketRegistration = () => {
                                           artType: type === 'performer' ? performerForm.artType : undefined,
                                           duration: type === 'performer' ? parseInt(performerForm.duration) : undefined,
                                           isPerformer: type === 'performer',
-                                          paymentStatus: 'pending'
+                                          paymentStatus: 'verified'
                                     };
                                     setTicketData(ticketInfo);
                                     setShowTicketModal(true);

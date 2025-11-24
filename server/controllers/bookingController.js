@@ -142,7 +142,8 @@ export const createBooking = async (req, res) => {
                   membersName,
                   isPerformer,
                   artType,
-                  duration
+                  duration,
+                  paymentId
             } = req.body;
 
             // Check if event exists
@@ -175,6 +176,8 @@ export const createBooking = async (req, res) => {
                   artType: isPerformer ? artType : undefined,
                   duration: isPerformer ? duration : undefined,
                   totalAmount,
+                  paymentId,
+                  paymentStatus: paymentId ? 'verified' : 'pending',
                   user: req.user._id
             });
 
