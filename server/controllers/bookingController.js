@@ -199,6 +199,32 @@ export const createBooking = async (req, res) => {
                   message: 'Booking created successfully',
                   booking
             });
+            try {
+                  const eventDate = eventData.dateTime ? new Date(eventData.dateTime).toLocaleString() : '';
+                  const subject = paymentId ? `Booking Confirmed: ${eventData.name}` : `Booking Created: ${eventData.name}`;
+                  const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2 style="color: ${paymentId ? '#16a34a' : '#2563eb'};">${paymentId ? 'Your booking is confirmed! 🎉' : 'Your booking has been created'}</h2>
+          <p>Dear ${booking.username},</p>
+          <ul>
+            <li><strong>Event:</strong> ${eventData.name || '-'}</li>
+            <li><strong>Date & Time:</strong> ${eventDate}</li>
+            <li><strong>Venue:</strong> ${eventData.venue || '-'}</li>
+            <li><strong>Ticket ID:</strong> ${booking.ticketId}</li>
+            <li><strong>Seats:</strong> ${booking.numberOfSeats}</li>
+            <li><strong>Total Amount:</strong> ₹${booking.totalAmount}</li>
+            ${paymentId ? `<li><strong>Payment ID:</strong> ${paymentId}</li>` : ''}
+          </ul>
+          ${paymentId
+                        ? '<p>Your payment has been verified and your booking is confirmed for the event.</p>'
+                        : '<p>Your booking is pending payment verification. Please complete payment to confirm your ticket.</p>'}
+          <p style="color:#555">— Voice of Rajkot Team</p>
+        </div>
+      `;
+                  await sendEmail(booking.email, subject, html);
+            } catch (mailErr) {
+                  console.error('Error sending booking email:', mailErr);
+            }
       } catch (error) {
             console.error('Create booking error:', error);
             res.status(500).json({ success: false, message: 'Server error', error: error.message });
